@@ -1,0 +1,10 @@
+{
+    "public": {
+        "wallet": "Wallet",
+        "test": "Test",
+        "connect":"Connect Wallet",
+        "change":"Switch Language",
+        "check":"Check Connection Status",
+        "now":"Now"
+    }
+}

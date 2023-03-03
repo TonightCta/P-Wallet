@@ -1,0 +1,22 @@
+.test-view {
+  text-align: left;
+  padding-top: 80px;
+  padding-left: 100px;
+  button {
+    display: inline-block;
+    margin-bottom: 40px;
+    background-color: #4266FF;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    outline: none;
+    border: 0;
+  }
+  p:last-child{
+    button{
+        background: rgba(66, 102, 255, .1);
+        color: #333;
+    }
+  }
+}

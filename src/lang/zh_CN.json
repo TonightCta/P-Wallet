@@ -1,0 +1,10 @@
+{
+    "public": {
+        "wallet": "钱包",
+        "test": "测试",
+        "connect":"连接钱包",
+        "change":"切换语言",
+        "check":"检查连接状态",
+        "now":"当前"
+    }
+}
