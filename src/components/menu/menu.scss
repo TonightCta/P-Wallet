@@ -1,19 +1,86 @@
 .menu-box {
   width: 100%;
   height: 80px;
-  box-shadow: 0px 0px 5px #ccc;
+  box-shadow: 0px 0px 5px #999;
   position: fixed;
   top: 0;
   left: 0;
-  background-color: white;
-  ul{
+  background-color: #131615;
+  .menu-inside {
+    width: 1600px;
+    margin: 0 auto;
     display: flex;
-    height: 100%;
-    width: 100%;
+    justify-content: space-between;
     align-items: center;
-    li{
-        margin-left: 30px;
-        cursor: pointer;
+    height: 100%;
+    .logo-menu {
+      display: flex;
+      align-items: center;
+      .logo-box {
+        width: 120px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        margin-right: 50px;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      ul {
+        display: flex;
+        align-items: center;
+        li {
+          margin-right: 30px;
+          cursor: pointer;
+          color: white;
+        }
+      }
+    }
+    .connect-wallet-msg {
+      display: flex;
+      align-items: center;
+      .tools-box {
+        display: flex;
+        align-items: center;
+        .icon-oper {
+          margin-right: 30px;
+          cursor: pointer;
+        }
+        .balance-text {
+          color: white;
+          margin-right: 18px;
+        }
+      }
+      .select-chain {
+        .mine-select {
+          .ant-select-selector {
+            height: 30px;
+            align-items: center;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0);
+            .ant-select-selection-item {
+              color: white;
+              font-weight: 600;
+            }
+          }
+          .ant-select-arrow {
+            color: white;
+          }
+        }
+      }
+      .connect-btn {
+        margin-left: 28px;
+        background-color:#E10185;
+        display: flex;
+        align-items: center;
+        border-radius: 8px;
+        padding-left: 12px;
+        button {
+          color: white;
+          font-weight: 600;
+        }
+      }
     }
   }
 }

@@ -1,9 +1,14 @@
 .index-view {
   padding-top: 80px;
+  .router-view{
+    width: 1600px;
+    margin: 0 auto;
+  }
 }
 .page-enter {
   opacity: 0;
   transform: translateX(15px);
+  position: absolute;
 }
 
 .page-enter-active {

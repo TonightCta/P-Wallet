@@ -14,8 +14,8 @@ const TestView = (): ReactElement<ReactNode> => {
     const contect = async () : Promise<void> => {
         try{
             await ethereum.request({ method: 'eth_requestAccounts' })
-        }catch(error){
-            console.log(error)
+        }catch(error:any){
+            console.log(error);
         }
     };
     //检查链接状态

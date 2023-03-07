@@ -11,6 +11,7 @@ const web3 =  new Web3(web3Provider);
 export const defaultState : State = {
     web3:web3,
     language:localStorage.getItem('language') || 'en',
+    address:sessionStorage.getItem('address') || null
 };
 
 export const defaultContext : Context = {
@@ -28,6 +29,9 @@ export const initState = (state:State,action:IAction) => {
         case Type.SET_LANGUAGE:
             localStorage.setItem('language',payload.language as string);
             return { ...state,language:payload.language }
+        case Type.SET_ADDRESS:
+            sessionStorage.setItem('address',payload.address as string);
+            return { ...state,address:payload.address }
         default:
             return state;
     }

@@ -3,14 +3,21 @@ import './index.css';
 import './assets/css/reset.css'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './lang/index'
+import './lang/index';
+import { ConfigProvider } from 'antd';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   // <React.StrictMode>
+  <ConfigProvider theme={{
+    token: {
+      colorPrimary: '#E10185',
+    },
+  }}>
     <App />
+  </ConfigProvider>
   // </React.StrictMode>
 );
 
