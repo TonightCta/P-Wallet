@@ -1,9 +1,9 @@
-import { ReactElement, ReactNode, useState, useContext } from 'react';
+import { ReactElement, ReactNode, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button, Select } from 'antd';
 import { PieChartOutlined, SettingOutlined } from '@ant-design/icons'
-import { useConnect } from '../../utils/hooks'
+import { useConnect, useSwitchChain } from '../../utils/hooks'
 import './menu.scss'
 import { PWallet } from '../../App';
 import Jazzicon from 'react-jazzicon'
@@ -15,9 +15,9 @@ const MenuTab = (): ReactElement<ReactNode> => {
     //当前连接地址
     const { state } = useContext(PWallet);
     //当前选择主网
-    const [selectedChainKey, setSelectChain] = useState<string>('Plian-Main');
+    const { switchC } = useSwitchChain();
     const handleChange = (value: string) => {
-        setSelectChain(value);
+        switchC(Number(value))
     };
     return (
         <div className='menu-box'>
@@ -57,25 +57,26 @@ const MenuTab = (): ReactElement<ReactNode> => {
                         <Select
                             size='small'
                             className='mine-select'
-                            defaultValue="main"
-                            style={{ width: 120, height: 30 }}
+                            value={state.default_chain}
+                            style={{ width: 200, height: 30 }}
                             onChange={handleChange}
                             options={[
-                                { value: 'main', label: 'Plian-Main' },
-                                { value: 'l2', label: 'Plian-L2' },
+                                { value: '2099156', label: 'Plian Mainnet Main' },
+                                { value: '8007736', label: 'Plian Mainnet Subchain 1' },
                             ]}
                         />
                     </div>
                     {/* 连接钱包 */}
                     <div className='connect-btn'>
-                        {state.address && <div className='ss'>
-                            <Jazzicon diameter={18} seed={parseInt(state.address.slice(2, 10), 16)} />
-                        </div>}
+
                         <Button type='primary' onClick={() => {
                             !state.address && connect()
-                        }}>{!state.address
-                            ? 'Connect Wallet'
-                            : `${state.address.substring(0, 6)}...${state.address.substring(state.address.length - 6, state.address.length)}`}
+                        }}>
+                            {state.address && <div className='avatar'>
+                                <Jazzicon diameter={18} seed={parseInt(state.address.slice(2, 10), 16)} />
+                            </div>}{!state.address
+                                ? 'Connect Wallet'
+                                : `${state.address.substring(0, 6)}...${state.address.substring(state.address.length - 6, state.address.length)}`}
                         </Button>
                     </div>
                 </div>

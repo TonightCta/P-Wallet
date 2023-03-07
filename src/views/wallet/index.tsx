@@ -1,5 +1,6 @@
 import { ReactElement,ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import './index.scss'
 
 const WalletView = () : ReactElement<ReactNode> => {
     const { t } = useTranslation();

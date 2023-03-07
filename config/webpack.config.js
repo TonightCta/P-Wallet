@@ -518,7 +518,14 @@ module.exports = function (webpackEnv) {
                   },
                 },
                 'sass-loader'
-              ),
+              ).concat({
+                loader:'sass-resources-loader',
+                options:{
+                  resources:[
+                    path.resolve(__dirname,'../src/assets/css/common.scss')
+                  ]
+                }
+              }),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
               // Remove this when webpack adds a warning or an error for this.

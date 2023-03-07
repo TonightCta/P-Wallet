@@ -71,14 +71,17 @@
       }
       .connect-btn {
         margin-left: 28px;
-        background-color:#E10185;
         display: flex;
         align-items: center;
-        border-radius: 8px;
-        padding-left: 12px;
         button {
           color: white;
           font-weight: 600;
+          display: flex;
+          align-items: center;
+          .avatar{
+            margin-right: 12px;
+            transform: translateY(2px);
+          }
         }
       }
     }
