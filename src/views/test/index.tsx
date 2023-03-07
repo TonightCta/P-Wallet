@@ -20,7 +20,7 @@ const TestView = (): ReactElement<ReactNode> => {
     };
     //检查链接状态
     const checkcontect = () => {
-        console.log(ethereum.selectedAddress);
+        console.log(ethereum.isConnected());
         !ethereum.selectedAddress && alert('未连接钱包')
     }
     return (

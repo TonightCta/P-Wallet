@@ -49,7 +49,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                         <p className='setting-icon icon-oper'>
                             <SettingOutlined style={{ color: 'white', fontSize: 20 }} />
                         </p>
-                        <p className='balance-text'>Balance:0.0000</p>
+                        <p className='balance-text'>Balance&nbsp;:&nbsp;{state.account_balance?.toFixed(4)}</p>
                     </div>
 
                     {/* 选择主网 */}

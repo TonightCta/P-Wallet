@@ -13,7 +13,8 @@ export const defaultState : State = {
     language:localStorage.getItem('language') || 'en',//本地语言
     address:localStorage.getItem('address') || null,//当前连接地址
     check_chain:1,//是否在Plian
-    default_chain:'2099156'
+    default_chain:'2099156',//默认选择链
+    account_balance:0,//余额
 };
 
 export const defaultContext : Context = {
@@ -38,6 +39,8 @@ export const initState = (state:State,action:IAction) => {
             return { ...state,check_chain:payload.check_chain };
         case Type.SET_DEFAULT_CHAIN:
             return { ...state,default_chain:payload.default_chain }
+        case Type.SET_BALANCE:
+            return { ...state, account_balance:payload.account_balance}
         default:
             return state;
     }

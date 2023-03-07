@@ -10,15 +10,13 @@ const { ethereum } = win;
 const useBalance = () => {
     const { state, dispatch } = useContext(PWallet);
     const inquireInner = async () => {
-        // TODO
-        const balance = await ethereum.request({
-            method: 'eth_call',
-            params: [{
-                "from": state.address,
-                "to": '',
-                "data": "0x70a08231000000000000000000000000" + ethereum.selectedAddress.replace('0x', '')
-            }, 'latest']
-        });
+        const balance = await state.web3.eth.getBalance(ethereum.selectedAddress);
+        dispatch({
+            type: Type.SET_BALANCE,
+            payload: {
+                account_balance: Number((balance / 1e18).toFixed(4))
+            }
+        })
     };
     return {
         inquire: inquireInner
@@ -118,6 +116,9 @@ export const useWeb3 = () => {
     const chainChange = () => {
         ethereum.on('chainChanged', () => {
             check();
+        })
+        ethereum.on('disconnect',(a:any) => {
+            console.log(a)
         })
     }
     return {
