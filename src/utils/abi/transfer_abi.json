@@ -1,0 +1,62 @@
+[
+    {
+        "type": "function",
+        "name": "DepositInMainChain",
+        "constant": false,
+        "inputs": [
+            {
+                "name": "chainId",
+                "type": "string"
+            }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "DepositInChildChain",
+        "constant": false,
+        "inputs": [
+            {
+                "name": "chainId",
+                "type": "string"
+            },
+            {
+                "name": "txHash",
+                "type": "bytes32"
+            }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "WithdrawFromChildChain",
+        "constant": false,
+        "inputs": [
+            {
+                "name": "chainId",
+                "type": "string"
+            }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "WithdrawFromMainChain",
+        "constant": false,
+        "inputs": [
+            {
+                "name": "chainId",
+                "type": "string"
+            },
+            {
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "name": "txHash",
+                "type": "bytes32"
+            }
+        ],
+        "outputs": []
+    }
+]

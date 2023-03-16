@@ -1,0 +1,35 @@
+.footer-wapper {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 10px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  .left-msg {
+    display: flex;
+    height: 30px;
+    align-items: center;
+    img {
+      width: 37px;
+      height: 30px;
+      margin-right: 20px;
+    }
+    p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 16px;
+    }
+  }
+  .right-com {
+    ul {
+      display: flex;
+      align-items: center;
+      li {
+        margin-right: 24px;
+        cursor: pointer;
+      }
+      li:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

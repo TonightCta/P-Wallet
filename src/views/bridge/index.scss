@@ -1,0 +1,239 @@
+.wallet-view {
+  width: 1400px;
+  margin: 0 auto;
+  .swap-content {
+    width: 600px;
+    border-radius: 8px;
+    background-color: $tableB;
+    margin: 0 auto;
+    padding: 20px 120px 50px;
+    .tab-box {
+      width: 100%;
+      height: 40px;
+      background-color: #000;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      ul {
+        display: flex;
+        justify-content: space-between;
+        box-sizing: border-box;
+        padding: 5px;
+        li {
+          font-size: 18px;
+          color: #787878;
+          font-weight: 500;
+          width: 160px;
+          height: 30px;
+          text-align: center;
+          line-height: 30px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: 0.3s all;
+        }
+        .active-tab {
+          background-color: $tableB;
+          color: white;
+        }
+      }
+    }
+    .transfer-msg {
+      width: 100%;
+      padding: 15px 25px;
+      background-color: #000;
+      border-radius: 8px;
+      p {
+        font-size: 16px;
+        color: $textColor;
+        span {
+          color: white;
+          margin-left: 10px;
+          font-weight: bold;
+          font-size: 15px;
+        }
+      }
+      .inp-amount {
+        margin-top: 15px;
+        input {
+          width: 240px;
+          height: 50px;
+          border-radius: 8px;
+          background-color: rgba(0, 0, 0, 0);
+          color: white;
+          border: 1px solid $textColor;
+          box-sizing: border-box;
+          padding-left: 10px;
+          font-size: 19px;
+          font-weight: 500;
+        }
+      }
+    }
+    .from-box {
+      span {
+        display: inline-block;
+        padding: 5px 10px;
+        border: 1px solid $textColor;
+        border-radius: 8px;
+      }
+      p:last-child {
+        margin-top: 10px;
+      }
+    }
+    .to-box {
+      margin-top: 48px;
+      p {
+        margin-top: 10px;
+      }
+      p:first-child {
+        margin-top: 0;
+      }
+    }
+    .make-transfer {
+      margin-top: 40px;
+      width: 100%;
+      button {
+        width: 100%;
+        height: 40px;
+      }
+    }
+  }
+  .transactions-content {
+    width: 100%;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    background-color: $tableB;
+    border-radius: 8px;
+    padding: 20px;
+    button {
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .table-name {
+      font-size: 20px;
+      font-weight: 500;
+      color: white;
+    }
+    .table-content {
+      margin-top: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      .state-box {
+        display: flex;
+        align-items: center;
+        .state-point {
+          width: 11px;
+          height: 11px;
+          border-radius: 50%;
+          margin-right: 10px;
+        }
+      }
+      .failed-state {
+        .state-point {
+          background-color: #ff0000;
+        }
+      }
+      .pass-state {
+        .state-point {
+          background-color: #00c800;
+        }
+      }
+      .amount-oper {
+        color: #1ab1e3;
+      }
+      .ant-table-wrapper {
+        background-color: $tableB;
+        .ant-table {
+          background-color: $tableB;
+          border-radius: 8px;
+          .ant-table-thead {
+            tr {
+              th {
+                background-color: $tableB;
+                color: $textColor;
+                font-weight: 500;
+                border: 0;
+              }
+            }
+          }
+          .ant-table-tbody {
+            .ant-table-placeholder{
+              background-color: $tableB;
+              .ant-empty-description{
+                color: #888;
+              }
+              .ant-table-cell:hover{
+                background-color: rgba(0,0,0,0);
+              }
+            }
+            .ant-table-placeholder:hover{
+              background-color: $tableB!important;
+            }
+            tr {
+              td {
+                border: 0;
+                color: white;
+              }
+            }
+            tr:hover {
+              background: #333 !important;
+            }
+          }
+        }
+      }
+      .ant-spin-spinning {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+      .ant-spin{
+        max-height: none;
+      }
+      .ant-pagination {
+        .ant-pagination-item {
+          a {
+            color: $textColor;
+          }
+        }
+        .ant-pagination-item-active {
+          background-color: $tableB;
+          a {
+            color: $primaryColor;
+          }
+        }
+        .ant-pagination-prev,
+        .ant-pagination-next {
+          .ant-pagination-item-link {
+            color: $textColor;
+          }
+        }
+      }
+    }
+  }
+}
+.wait-modal {
+  text-align: center;
+  .modal-title {
+    font-size: 20px;
+    color: $primaryColor;
+    font-weight: bold;
+  }
+  .icon-oper {
+    margin-top: 30px;
+    font-size: 40px;
+    color: $primaryColor;
+  }
+  .transfer-status {
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 18px;
+  }
+  .oper-btn {
+    margin-top: 20px;
+    .wait-text {
+      font-size: 16px;
+      span {
+        font-weight: bold;
+        font-size: 14px;
+        color: #ff0000;
+      }
+    }
+  }
+}

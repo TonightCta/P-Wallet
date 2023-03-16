@@ -4,12 +4,14 @@ import { Type } from "../../utils/type";
 import './index.scss';
 import i18n from "../../lang/index";
 import { useTranslation } from "react-i18next";
+import { useTransfer } from "../../utils/hooks";
 
 const TestView = (): ReactElement<ReactNode> => {
     const win:any = window;
     const { ethereum } = win;
     const { state,dispatch } = useContext(PWallet);
     const { t } = useTranslation();
+    // const { send } = useTransfer();
     //连接钱包
     const contect = async () : Promise<void> => {
         try{
@@ -22,6 +24,10 @@ const TestView = (): ReactElement<ReactNode> => {
     const checkcontect = () => {
         console.log(ethereum.isConnected());
         !ethereum.selectedAddress && alert('未连接钱包')
+    }
+    //转账
+    const testTransfer = () => {
+        // send(1,8007736)
     }
     return (
         <div className="test-view">
@@ -44,6 +50,13 @@ const TestView = (): ReactElement<ReactNode> => {
             </p>
             <p>
                 <button onClick={checkcontect}>{t('public.check')}</button>
+            </p>
+            <div className="to-address">
+                {/* <p>TO:{state.to_chain ? state.to_chain : 'wallet not connected'}</p> */}
+                <p><input type="text" placeholder="Address" /></p>
+            </div>
+            <p>
+                <button onClick={testTransfer}>Transfer</button>
             </p>
         </div>
     )

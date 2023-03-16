@@ -1,53 +1,120 @@
 import { message } from "antd";
 import { useContext, useEffect } from 'react';
 import { PWallet } from "../App";
-import { Type } from "./type";
+import { IResponse, Type } from "./type";
+import TransferABI from './abi/transfer_abi.json';
+import ChainABI from './abi/chain_abi.json'
+import { gas, gasPrice } from "./type";
+import { SetWithdrawLog } from "../request/api";
+import { GetBalance } from '../request/api';
+
+
+interface BResult extends IResponse {
+    usdt?: string
+}
 
 
 const win: any = window;
 const { ethereum } = win;
+
+
 //余额查询
-const useBalance = () => {
-    const { state, dispatch } = useContext(PWallet);
-    const inquireInner = async () => {
-        const balance = await state.web3.eth.getBalance(ethereum.selectedAddress);
+export const useBalance = () => {
+    const { dispatch } = useContext(PWallet);
+    const update = (bol: boolean) => {
         dispatch({
-            type: Type.SET_BALANCE,
+            type: Type.SET_BALANCE_WAIT,
             payload: {
-                account_balance: Number((balance / 1e18).toFixed(4))
+                balance_wait: bol
             }
         })
     };
+    const inquireInner = async () => {
+        update(true)
+        setTimeout(async () => {
+            if (!ethereum.selectedAddress) {
+                update(false)
+                return
+            }
+            const result_main: BResult = await GetBalance({
+                address: ethereum.selectedAddress,
+                chainId: 0
+            });
+            const result_child: BResult = await GetBalance({
+                address: ethereum.selectedAddress,
+                chainId: 1
+            });
+            dispatch({
+                type: Type.SET_BALANCE,
+                payload: {
+                    account_balance: {
+                        main_balance: Number(result_main.data),
+                        main_balance_usdt: Number(result_main.usdt),
+                        child_balance: Number(result_child.data),
+                        child_balance_usdt: Number(result_child.usdt)
+                    }
+                }
+            })
+            // const balance = await state.web3.eth.getBalance(ethereum.selectedAddress);
+            // dispatch({
+            //     type: Type.SET_BALANCE,
+            //     payload: {
+            //         account_balance: Number((balance / 1e18).toFixed(4))
+            //     }
+            // });
+            update(false)
+        }, 500)
+
+    };
     return {
-        inquire: inquireInner
+        inquire: inquireInner,
+        update: update
     }
 }
 //检查默认连接链
 export const useCheckChain = () => {
     const { state, dispatch } = useContext(PWallet);
-    const { inquire } = useBalance();
     const next = () => {
-        if (ethereum.selectedAddress) {
-            const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
-            const isUseChain = chain_id === 2099156 || chain_id === 8007736;
-            dispatch({
-                type: Type.SET_CHECK_CHAIN,
-                payload: {
-                    check_chain: isUseChain ? 1 : 0
-                }
-            });
-            //设置本地默认链
-            const setLocalChainID = () => {
-                inquire();
+        setTimeout(() => {
+            if (ethereum.selectedAddress) {
+                const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
+                const isUseChain = chain_id === 2099156 || chain_id === 8007736;
                 dispatch({
-                    type: Type.SET_DEFAULT_CHAIN,
+                    type: Type.SET_CHECK_CHAIN,
                     payload: {
-                        default_chain: String(chain_id)
+                        check_chain: isUseChain ? 1 : 0
+                    }
+                });
+                //设置本地默认链
+                const setLocalChainID = () => {
+                    dispatch({
+                        type: Type.SET_TRNASFER_MSG,
+                        payload: {
+                            transfer_msg: {
+                                from_chain: chain_id === 2099156 ? 'Plian Mainnet Main' : 'Plian Mainnet Subchain 1',
+                                to_chain: chain_id === 2099156 ? 'Plian Mainnet Subchain 1' : 'Plian Mainnet Main',
+                                transfer_type: chain_id === 2099156 ? 0 : 1
+                            }
+                        }
+                    })
+                    dispatch({
+                        type: Type.SET_DEFAULT_CHAIN,
+                        payload: {
+                            default_chain: String(chain_id)
+                        }
+                    })
+                };
+                isUseChain && setLocalChainID()
+            } else {
+                dispatch({
+                    type: Type.SET_ADDRESS,
+                    payload: {
+                        address: null
                     }
                 })
-            };
-            isUseChain && setLocalChainID()
-        }
+            }
+        }, 200)
+
     };
     return {
         check: next
@@ -101,7 +168,7 @@ export const useWeb3 = () => {
             dispatch({
                 type: Type.SET_ADDRESS,
                 payload: {
-                    address: accounts.length > 0 ? accounts[0] : ''
+                    address: accounts.length > 0 ? accounts[0] : null
                 }
             });
             if (accounts.length === 0) {
@@ -117,9 +184,9 @@ export const useWeb3 = () => {
         ethereum.on('chainChanged', () => {
             check();
         })
-        ethereum.on('disconnect',(a:any) => {
-            console.log(a)
-        })
+        // ethereum.on('disconnect', (a: any) => {
+        //     console.log(a)
+        // })
     }
     return {
         monitorAccount: accountChange,
@@ -172,12 +239,13 @@ export const useSwitchChain = () => {
             return item.chain_id === chain_id
         });
         try {
-            await ethereum.request({
+            const result = await ethereum.request({
                 method: "wallet_switchEthereumChain",
                 params: [{ chainId: state.web3.utils.toHex(chain_id ? chain_id : 2099156) }],
             });
+            return result
         } catch (error: any) {
-            if (error.code === 4902) {
+            const add = async () => {
                 const params = [
                     {
                         chainId: state.web3.utils.toHex(chain_id ? chain_id : chain_list[0].chain_id), // A 0x-prefixed hexadecimal string
@@ -205,9 +273,242 @@ export const useSwitchChain = () => {
                     // handle "add" error
                 }
             }
+            switch (error.code) {
+                case 4902:
+                    add();
+                    break;
+                case -32002:
+                    message.error('You have pending wallet operations');
+                    break;
+                case 4001:
+                    message.error('You have canceled');
+                    break;
+                default:
+                    console.log(error)
+            }
+            return error
         }
     };
     return {
         switchC: switchInner
+    }
+};
+//转账
+export const useTransfer = () => {
+    const { state, dispatch } = useContext(PWallet);
+    const { switchC } = useSwitchChain();
+    const { inquire } = useBalance();
+    const contract = new state.web3.eth.Contract(TransferABI, '0x0000000000000000000000000000000000000065');
+    //更新等待状态
+    const updateWait = (_type: string, _visible: boolean) => {
+        dispatch({
+            type: Type.SET_WAITING,
+            payload: {
+                waiting: {
+                    type: _type,
+                    visible: _visible
+                }
+            }
+        })
+    };
+    //更新转账hash
+    const updateHash = (_hash: string) => {
+        dispatch({
+            type: Type.SET_TRANSFER_HASH,
+            payload: {
+                transfer_hash: _hash
+            }
+        })
+    }
+    //主链充值 - 转出
+    const depositMainChain = async (amount: number) => {
+        updateWait('wait', true)
+        const params = {
+            from: state.address,
+            chainId: 'pchain',
+            value: state.web3.utils.toWei(amount, 'ether'),
+            gas: gas,
+            gasPrice: gasPrice
+        };
+        updateHash('1')
+        const result = await contract.methods.DepositInMainChain('child_0').send(params);
+        if (result['transactionHash']) {
+            updateHash(result['transactionHash'])
+            const wait = await switchC(8007736);
+            dispatch({
+                type: Type.SET_LAST_TRANSFER_CHAIN,
+                payload: {
+                    last_transfer_chain: 8007736
+                }
+            })
+            wait == null && takeDepositMain(result['transactionHash'])
+        } else {
+            updateWait('error', true)
+        }
+    };
+    //主链充值 - 接收
+    const takeDepositMain = async (hash: string) => {
+        updateWait('wait', true)
+        let _local_hash: string;
+        const params = {
+            from: state.address,
+            chainId: 'child_0',
+            gas: gas,
+            gasPrice: '0'
+        };
+        updateHash('1')
+        contract.methods.DepositInChildChain('child_0', hash).send(params).on('transactionHash', (_hash: string) => {
+            updateHash(_hash)
+            _local_hash = _hash;
+        }).on('receipt', (response: unknown) => {
+            updateHash('')
+            updateWait('success', true)
+            inquire();
+            dispatch({
+                type: Type.SET_RELOAD_LOGS,
+                payload: {
+                    reload_logs: new Date().getTime()
+                }
+            })
+        }).on('error', (error: any) => {
+            console.log(error)
+            if (error.message.indexOf('50 blocks') > -1) {
+                // setShowSuccess(true)
+                checkTransfer(_local_hash)
+            } else {
+                updateHash('')
+                updateWait('error', true)
+            }
+        })
+        //TODO
+        // state.web3.eth.subscribe('pendingTransactions', (error: unknown, result: unknown) => {
+        //     console.log(result)
+        // }).on('data', (log: unknown) => {
+        //     console.log(log)
+        // })
+    };
+    //子链提现 - 转出
+    const withdrawChildChain = async (amount: number) => {
+        updateWait('wait', true)
+        const params = {
+            from: state.address,
+            chainId: 'pchain',
+            value: state.web3.utils.toWei(amount, 'ether'),
+            gas: gas,
+            gasPrice: gasPrice
+        };
+        updateHash('1')
+        const result = await contract.methods.WithdrawFromChildChain('child_0').send(params);
+        if (result['transactionHash']) {
+            updateHash(result['transactionHash'])
+            const timer = setInterval(async () => {
+                const service: any = await SetWithdrawLog({
+                    txHash: result['transactionHash'],
+                    chainId: 1
+                });
+                clearInterval(timer)
+                if (service.result === 'success') {
+                    const wait = await switchC(2099156);
+                    dispatch({
+                        type: Type.SET_LAST_TRANSFER_CHAIN,
+                        payload: {
+                            last_transfer_chain: 2099156
+                        }
+                    })
+                    wait == null && takeWithdrawChild(amount, result['transactionHash'])
+                }
+            }, 5000);
+        }
+    };
+    //子链提现 - 接收
+    const takeWithdrawChild = async (amount: number, hash: string) => {
+        let _local_hash: string;
+        updateWait('wait', true)
+        const params = {
+            from: state.address,
+            chainId: 'pchain',
+            gas: gas,
+            gasPrice: '0'
+        };
+        updateHash('1')
+        contract.methods.WithdrawFromMainChain('child_0', state.web3.utils.toWei(String(amount)), hash).send(params).on('transactionHash', (_hash: string) => {
+            updateHash(_hash)
+            _local_hash = _hash;
+        }).on('receipt', (response: unknown) => {
+            updateHash('')
+            updateWait('success', true)
+            inquire();
+            dispatch({
+                type: Type.SET_RELOAD_LOGS,
+                payload: {
+                    reload_logs: new Date().getTime()
+                }
+            })
+        }).on('error', (error: any) => {
+            if (error.message.indexOf('50 blocks') > -1) {
+                // setShowSuccess(true)
+                checkTransfer(_local_hash)
+            } else {
+                updateWait('error', true)
+            }
+        })
+    };
+    const checkTransfer = async (hash?: string) => {
+        const chain_id = state.web3.utils.hexToNumber(ethereum.chainId);
+        if (chain_id !== state.last_transfer_chain) {
+            await switchC(state.last_transfer_chain)
+        };
+        const timer = setInterval(async () => {
+            // console.log(1223)
+            const result = await state.web3.eth.getTransactionReceipt(hash ? hash : state.transfer_hash)
+            if (result && result.status) {
+                clearInterval(timer);
+                updateHash('')
+                updateWait('success', true);
+                dispatch({
+                    type: Type.SET_RELOAD_LOGS,
+                    payload: {
+                        reload_logs: new Date().getTime()
+                    }
+                })
+            }
+            if (result && !result.status) {
+                clearInterval(timer);
+                updateHash('')
+                updateWait('error', true);
+            }
+        }, 5000)
+    }
+    return {
+        depositMainChain: depositMainChain,
+        takeDepositMain: takeDepositMain,
+        withdrawChildChain: withdrawChildChain,
+        takeWithdrawChild: takeWithdrawChild,
+        check: checkTransfer
+    }
+};
+interface ChainNeed {
+    _chain_id: string,
+    _min_validators: string,
+    _min_depositAmount: string,
+    _start_block: string,
+    _end_block: string
+}
+//链操作
+export const useChain = () => {
+    const { state } = useContext(PWallet);
+    //minValidators minDepositAmount startBlock endBlock
+    const contract = new state.web3.eth.Contract(ChainABI, '0x0000000000000000000000000000000000000065');
+    const inner = async (params: ChainNeed) => {
+        console.log(Object.values(params))
+        const result = await contract.methods.CreateChildChain(params._chain_id, params._min_validators, params._min_depositAmount, params._start_block, params._end_block).send({
+            from: state.address,
+            gas: gas,
+            gasPrice: gasPrice
+        })
+        console.log(result);
+    };
+    return {
+        create: inner
     }
 }

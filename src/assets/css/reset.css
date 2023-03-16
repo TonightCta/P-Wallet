@@ -185,3 +185,13 @@ input::-webkit-inner-spin-button {
 th::before{
     width: 0!important;
 }
+
+table:hover,
+tr:hover,
+thead:hover {
+    background: #1B1F1E !important;
+}
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+    background: none !important;
+}

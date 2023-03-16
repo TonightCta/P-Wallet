@@ -26,8 +26,13 @@ const RouterConfig = (): ReactElement => {
         <>
             <Routes>
                 <Route path='/' element={<View.IndexView />}>
-                    <Route index element={<View.WalletView />}></Route>
-                    <Route path='/test' element={<View.TestView />}></Route>
+                    <Route index element={<View.BridgeView />}></Route>
+                    <Route path='/stake' element={<View.StakeView />}></Route>
+                    <Route path='/l2' element={<View.L2View/>}>
+                        {/* <Route index element={<View.HistoryView/>}></Route>
+                        <Route path='/l2/create' element={<View.CreatView/>}></Route>
+                        <Route path='/l2/edit' element={<View.EditView/>}></Route> */}
+                    </Route>
                 </Route>
             </Routes>
             {/* 切链提示 */}

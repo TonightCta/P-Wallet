@@ -1,0 +1,152 @@
+.l2-view {
+  width: 100%;
+  position: relative;
+  .tab-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #131615;
+    z-index: 100;
+    ul {
+      display: inline-flex;
+      width: auto;
+      height: 30px;
+      border-radius: 20px;
+      background-color: $tableB;
+      li {
+        width: 100px;
+        border-radius: 20px;
+        text-align: center;
+        line-height: 30px;
+        font-size: 14px;
+        color: $textColor;
+        cursor: pointer;
+        transition: 0.3s all;
+      }
+      .active-tab {
+        background-color: $primaryColor;
+        color: white;
+      }
+    }
+  }
+  .inner-view {
+    height: calc(100vh - 112px);
+    overflow: auto;
+    padding-top: 50px;
+    padding-bottom: 20px;
+    .public-content {
+      width: 600px;
+      padding: 30px 80px 40px;
+      border-radius: 8px;
+      background-color: $tableB;
+      margin: 0 auto;
+      .package-title {
+        font-size: 22px;
+        color: white;
+        font-weight: 500;
+      }
+      .public-input {
+        ul {
+          li {
+            margin-top: 30px;
+            .lable {
+              font-size: 17px;
+              color: $textColor;
+              font-weight: 500;
+              span{
+                margin-left: 4px;
+                font-size: 16px;
+                cursor: pointer;
+              }
+            }
+            p {
+              position: relative;
+              input {
+                width: 100%;
+                height: 44px;
+                box-sizing: border-box;
+                padding-left: 26px;
+                font-size: 15px;
+                color: white;
+                margin-top: 10px;
+                border-radius: 8px;
+                background-color: rgba(0, 0, 0, 0);
+                border: 1px solid white;
+                font-weight: 500;
+              }
+              input::placeholder {
+                color: #5a5a5a;
+              }
+              .right-lable {
+                position: absolute;
+                right: 26px;
+                font-size: 16px;
+                color: white;
+                font-weight: 500;
+                top: 24px;
+              }
+            }
+          }
+          li:last-child {
+            margin-top: 40px;
+            button {
+              height: 44px;
+              font-size: 20px;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+      .create-step-two {
+        ul {
+          li:last-child {
+            display: flex;
+            button:first-child {
+              width: 100px;
+              margin-right: 20px;
+            }
+            button:last-child {
+              flex: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+  .inner-view::-webkit-scrollbar {
+    display: none;
+  }
+}
+.confirm-join {
+  text-align: center;
+  p:first-child {
+    font-size: 20px;
+    color: $primaryColor;
+    font-weight: bold;
+  }
+  p:nth-child(2) {
+    font-size: 40px;
+    color: $primaryColor;
+    margin-top: 30px;
+  }
+  p:nth-child(3){
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 18px;
+  }
+  p:last-child{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    button{
+      width: 94px;
+    }
+    button:first-child{
+      margin-right: 10px;
+    }
+    button:last-child{
+      margin-left: 10px;
+    }
+  }
+}

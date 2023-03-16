@@ -8,7 +8,7 @@ export const PWallet = createContext<Context>(defaultContext);
 
 
 
-function App() {
+const App = () => {
   const [state, dispatch] = useReducer(initState, defaultState, defaultStateInit);
   return (
     <HashRouter>

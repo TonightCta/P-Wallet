@@ -1,13 +1,19 @@
 
-import { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { useBalance } from '../../utils/hooks'
 import MenuTab from '../../components/menu/menu';
 import './index.scss'
+import Footer from './../../components/footer/index';
 
 
 const IndexView = (): ReactElement<ReactNode> => {
     const location = useLocation();
+    const { inquire } = useBalance();
+    useEffect(() => {
+        inquire()
+    },[])
     return (
         <div className='index-view'>
             <MenuTab />
@@ -18,8 +24,10 @@ const IndexView = (): ReactElement<ReactNode> => {
                     </CSSTransition>
                 </TransitionGroup>
             </div>
+            <Footer/>
         </div>
     )
 };
 
 export default IndexView;
+

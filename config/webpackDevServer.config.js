@@ -103,7 +103,7 @@ module.exports = function (proxy, allowedHost) {
     proxy: {
       ...proxy,
       '/api': {
-        target: 'http://192.168.31.16:8000/api/v1',
+        target: 'https://api.pchain.org',
         changeOrigin: true,
         logLevel: 'debug',
         pathRewrite: {
