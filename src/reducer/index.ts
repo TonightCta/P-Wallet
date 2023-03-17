@@ -29,7 +29,8 @@ export const defaultState : State = {
     transfer_hash:sessionStorage.getItem('transfer_hash') || '',
     last_transfer_chain:Number(sessionStorage.getItem('last_transfer_chain')) || 0,
     reload_logs:new Date().getTime(),
-    l2_active:Number(sessionStorage.getItem('l2_active')) || 999
+    l2_active:Number(sessionStorage.getItem('l2_active')) || 999,
+    last_creat:sessionStorage.getItem('last_creat') || '',
 };
 
 export const defaultContext : Context = {
@@ -79,6 +80,9 @@ export const initState = (state:State,action:IAction) => {
         case Type.SET_L2_ACTIVE:
             sessionStorage.setItem('l2_active',String(payload.l2_active));
             return { ...state,l2_active:payload.l2_active }
+        case Type.SET_LAST_CREAT:
+            sessionStorage.setItem('last_creat',payload.last_creat as string);
+            return { ...state,last_creat:payload.last_creat }
         default:
             return state;
     }

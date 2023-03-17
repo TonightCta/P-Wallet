@@ -72,7 +72,9 @@ const L2View = (): ReactElement<ReactNode> => {
                 </div>
                 <div className="inner-view">
                     {
-                        active === 0 && <HistoryView /> ||
+                        active === 0 && <HistoryView switchTab={(val: number) => {
+                            setActive(val)
+                        }} address={state.address as string}/> ||
                         active === 1 && <CreatView switchTab={(val: number) => {
                             setActive(val)
                         }} /> ||

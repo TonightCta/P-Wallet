@@ -1,11 +1,12 @@
 import { Button, Tooltip } from "antd";
-import { ReactElement, ReactNode, useState, useContext } from "react";
+import { ReactElement, ReactNode, useState, useContext, useEffect } from "react";
 import { PWallet } from './../../../../App';
 import { SignAddress } from '../../../../request/api'
 import { error } from "../../../../utils";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useChain } from './../../../../utils/hooks';
 import FeedBackModal from "../../../../components/feedback";
+import { Type } from "../../../../utils/type";
 
 interface Input {
     from: string,
@@ -23,14 +24,26 @@ const InputSource: Input = {
 
 
 const JoinIndex = (): ReactElement<ReactNode> => {
-    const { state } = useContext(PWallet);
+    const { state, dispatch } = useContext(PWallet);
     const [visible, setVisible] = useState<boolean>(false);
-    const [pass,setPass] = useState<boolean>(false);
+    const [pass, setPass] = useState<boolean>(false);
     const { join } = useChain();
     const [input, setInput] = useState<Input>({
         ...InputSource,
         from: state.address ? state.address as string : 'Wallet not connected',
     });
+    useEffect(() => {
+        setInput({
+            ...input,
+            chain_id: state.last_creat as string
+        });
+        return () => {
+            setInput({
+                ...input,
+                chain_id: ''
+            });
+        }
+    }, [])
     const submitJoin = async () => {
         if (!input.chain_id) {
             error('Please enter chain id');
@@ -58,12 +71,17 @@ const JoinIndex = (): ReactElement<ReactNode> => {
             _signature: result.result
         }
         const result_rpc = await join(params);
-        console.log(result_rpc);
         setVisible(true)
         setPass(result_rpc ? true : false);
         result_rpc && setInput({
             ...InputSource,
             from: state.address as string
+        });
+        result_rpc && dispatch({
+            type: Type.SET_LAST_CREAT,
+            payload: {
+                last_creat: ''
+            }
         })
     };
     return (

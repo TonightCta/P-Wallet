@@ -4,6 +4,7 @@ import { PWallet } from './../../../../App';
 import { useChain } from './../../../../utils/hooks';
 import { DecimalToHex, error } from "../../../../utils";
 import { CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { Type } from "../../../../utils/type";
 
 interface StepOne {
     from: string,
@@ -38,7 +39,7 @@ const InputSource: StepOne = {
 
 const CreatView = (props: Prop): ReactElement<ReactNode> => {
     // const [step, setStep] = useState<number>(0);
-    const { state } = useContext(PWallet);
+    const { state, dispatch } = useContext(PWallet);
     const [joinBox, setJoinbox] = useState<boolean>(false);
     const { create } = useChain();
     //创建子链
@@ -89,7 +90,13 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
         }
         const result = await create(params);
         setJoinbox(true)
-        setPass(result ? true : false)
+        setPass(result ? true : false);
+        result && dispatch({
+            type: Type.SET_LAST_CREAT,
+            payload: {
+                last_creat: input.chain_id as string
+            }
+        })
         result && setInput({
             ...InputSource,
             from: state.address as string,

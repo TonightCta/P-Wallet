@@ -24,7 +24,8 @@ const EditView = (): ReactElement<ReactNode> => {
     const [pass,setPass] = useState<boolean>(false);
     const [input, setInput] = useState<Input>({
         ...InputSource,
-        from: state.address ? state.address as string : 'Wallet not connected'
+        from: state.address ? state.address as string : 'Wallet not connected',
+        chain_id:state.last_creat as string
     });
     const submitSet = async () => {
         if (!input.chain_id) {
@@ -40,7 +41,6 @@ const EditView = (): ReactElement<ReactNode> => {
             _reward: DecimalToHex(input.amount as number)
         }
         const result = await set(params);
-        console.log(result);
         setVisible(true)
         setPass(result ? true : false);
         result && setInput({

@@ -29,7 +29,8 @@ export interface State{
     transfer_hash?:string,
     last_transfer_chain?:number,
     reload_logs?:number,
-    l2_active?:number
+    l2_active?:number,
+    last_creat?:string
 }
 
 export enum Type{
@@ -46,7 +47,8 @@ export enum Type{
     SET_TRANSFER_HASH = 'set_transfer_hash',
     SET_LAST_TRANSFER_CHAIN = 'set_last_transfer_chain',
     SET_RELOAD_LOGS = 'set_reload_logs',
-    SET_L2_ACTIVE = 'set_l2_active'
+    SET_L2_ACTIVE = 'set_l2_active',
+    SET_LAST_CREAT = 'set_last_creat'
 };
 
 export interface IAction{
