@@ -36,7 +36,7 @@ const L2View = (): ReactElement<ReactNode> => {
     useEffect(() => {
         if (state.l2_active !== 999) {
             setActive(state.l2_active as number)
-        }else{
+        } else {
             setActive(0)
         }
         return () => {
@@ -50,34 +50,36 @@ const L2View = (): ReactElement<ReactNode> => {
     }, [])
     return (
         <div className="l2-view">
-            <div className="tab-list">
-                <ul>
+            <div style={{position:'relative'}}>
+                <div className="tab-list">
+                    <ul>
+                        {
+                            tab.map((item: Tab, index: number) => {
+                                return (
+                                    <li key={index} onClick={() => {
+                                        setActive(index);
+                                        dispatch({
+                                            type: Type.SET_L2_ACTIVE,
+                                            payload: {
+                                                l2_active: index
+                                            }
+                                        })
+                                    }} className={`${active === index ? 'active-tab' : ''}`}>{item.name}</li>
+                                )
+                            })
+                        }
+                    </ul>
+                </div>
+                <div className="inner-view">
                     {
-                        tab.map((item: Tab, index: number) => {
-                            return (
-                                <li key={index} onClick={() => {
-                                    setActive(index);
-                                    dispatch({
-                                        type: Type.SET_L2_ACTIVE,
-                                        payload: {
-                                            l2_active: index
-                                        }
-                                    })
-                                }} className={`${active === index ? 'active-tab' : ''}`}>{item.name}</li>
-                            )
-                        })
+                        active === 0 && <HistoryView /> ||
+                        active === 1 && <CreatView switchTab={(val: number) => {
+                            setActive(val)
+                        }} /> ||
+                        active === 2 && <JoinIndex /> ||
+                        active === 3 && <EditView />
                     }
-                </ul>
-            </div>
-            <div className="inner-view">
-                {
-                    active === 0 && <HistoryView /> ||
-                    active === 1 && <CreatView switchTab={(val:number) => {
-                        setActive(val)
-                    }}/> ||
-                    active === 2 && <JoinIndex /> ||
-                    active === 3 && <EditView />
-                }
+                </div>
             </div>
         </div>
     )

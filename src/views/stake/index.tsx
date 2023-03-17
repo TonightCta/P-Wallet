@@ -1,5 +1,6 @@
 
 import { ReactElement,ReactNode } from "react";
+import './index.scss'
 
 const StakeView = () : ReactElement<ReactNode> => {
     return (

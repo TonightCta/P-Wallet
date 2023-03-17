@@ -7,12 +7,29 @@ import ChainABI from './abi/chain_abi.json'
 import { gas, gasPrice } from "./type";
 import { SetWithdrawLog } from "../request/api";
 import { GetBalance } from '../request/api';
+import { DecimalToHex } from ".";
 
 
 interface BResult extends IResponse {
     usdt?: string
 }
+interface ChainNeed {
+    _chain_id: string,
+    _min_validators: string,
+    _min_depositAmount: string,
+    _start_block: string,
+    _end_block: string
+};
+interface JoinNeed {
+    _pubkey: string,
+    _chainId: string,
+    _signature: string
+};
 
+interface SetNedd {
+    _chain_id: string,
+    _reward: string
+}
 
 const win: any = window;
 const { ethereum } = win;
@@ -487,28 +504,37 @@ export const useTransfer = () => {
         check: checkTransfer
     }
 };
-interface ChainNeed {
-    _chain_id: string,
-    _min_validators: string,
-    _min_depositAmount: string,
-    _start_block: string,
-    _end_block: string
-}
+
+
 //链操作
 export const useChain = () => {
+    const gas_price: string = DecimalToHex(10 * Math.pow(10, 9));
     const { state } = useContext(PWallet);
     //minValidators minDepositAmount startBlock endBlock
     const contract = new state.web3.eth.Contract(ChainABI, '0x0000000000000000000000000000000000000065');
+    const send_data = {
+        from: state.address,
+        gas: gas,
+        gasPrice: gas_price
+    }
+    //创建子链
     const inner = async (params: ChainNeed) => {
-        console.log(Object.values(params))
-        const result = await contract.methods.CreateChildChain(params._chain_id, params._min_validators, params._min_depositAmount, params._start_block, params._end_block).send({
-            from: state.address,
-            gas: gas,
-            gasPrice: gasPrice
-        })
-        console.log(result);
+        const result = await contract.methods.CreateChildChain(params._chain_id, params._min_validators, params._min_depositAmount, params._start_block, params._end_block).send(send_data)
+        return result
     };
+    //加入子链
+    const join = async (params: JoinNeed) => {
+        const result = await contract.methods.JoinChildChain(params._pubkey, params._chainId, params._signature).send(send_data);
+        return result
+    };
+    //设置区块奖励
+    const set = async (params: SetNedd) => {
+        const result = await contract.methods.SetBlockReward(params._chain_id, params._reward).send(send_data);
+        return result
+    }
     return {
-        create: inner
+        create: inner,
+        join: join,
+        set: set
     }
 }

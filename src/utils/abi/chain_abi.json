@@ -25,5 +25,39 @@
                 "type": "uint256"
             }
         ]
-    }
+    },
+    {
+		"type": "function",
+		"name": "JoinChildChain",
+		"constant": false,
+		"inputs": [
+			{
+				"name": "pubKey",
+				"type": "bytes"
+			},
+			{
+				"name": "chainId",
+				"type": "string"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		]
+	},
+    {
+		"type": "function",
+		"name": "SetBlockReward",
+		"constant": false,
+		"inputs": [
+			{
+				"name": "chainId",
+				"type": "string"
+			},
+			{
+				"name": "reward",
+				"type": "uint256"
+			}
+		]
+	}
 ]

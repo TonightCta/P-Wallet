@@ -1,6 +1,5 @@
 .l2-view {
   width: 100%;
-  position: relative;
   .tab-list {
     position: absolute;
     top: 0;
@@ -54,7 +53,7 @@
               font-size: 17px;
               color: $textColor;
               font-weight: 500;
-              span{
+              span {
                 margin-left: 4px;
                 font-size: 16px;
                 cursor: pointer;
@@ -117,6 +116,118 @@
   .inner-view::-webkit-scrollbar {
     display: none;
   }
+  .history-content {
+    width: 100%;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    background-color: $tableB;
+    border-radius: 8px;
+    padding: 20px;
+    button {
+      border-radius: 8px;
+      font-size: 12px;
+      margin-right: 12px;
+    }
+    .table-name {
+      font-size: 20px;
+      font-weight: 500;
+      color: white;
+    }
+    .table-content {
+      margin-top: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      .state-box {
+        display: flex;
+        align-items: center;
+        .state-point {
+          width: 11px;
+          height: 11px;
+          border-radius: 50%;
+          margin-right: 10px;
+        }
+      }
+      .failed-state {
+        .state-point {
+          background-color: #ff0000;
+        }
+      }
+      .pass-state {
+        .state-point {
+          background-color: #00c800;
+        }
+      }
+      .amount-oper {
+        color: #1ab1e3;
+      }
+      .ant-table-wrapper {
+        background-color: $tableB;
+        .ant-table {
+          background-color: $tableB;
+          border-radius: 8px;
+          .ant-table-thead {
+            tr {
+              th {
+                background-color: $tableB;
+                color: $textColor;
+                font-weight: 500;
+                border: 0;
+              }
+            }
+          }
+          .ant-table-tbody {
+            .ant-table-placeholder {
+              background-color: $tableB;
+              .ant-empty-description {
+                color: #888;
+              }
+              .ant-table-cell:hover {
+                background-color: rgba(0, 0, 0, 0);
+              }
+            }
+            .ant-table-placeholder:hover {
+              background-color: $tableB !important;
+            }
+            tr {
+              td {
+                border: 0;
+                color: white;
+              }
+            }
+            tr:hover {
+              background: #333 !important;
+            }
+          }
+        }
+      }
+      .ant-spin-spinning {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+      .ant-spin {
+        max-height: none;
+      }
+      .ant-pagination {
+        .ant-pagination-item {
+          a {
+            color: $textColor;
+          }
+        }
+        .ant-pagination-item-active {
+          background-color: $tableB;
+          a {
+            color: $primaryColor;
+          }
+        }
+        .ant-pagination-prev,
+        .ant-pagination-next {
+          .ant-pagination-item-link {
+            color: $textColor;
+          }
+        }
+      }
+    }
+  }
 }
 .confirm-join {
   text-align: center;
@@ -126,26 +237,26 @@
     font-weight: bold;
   }
   p:nth-child(2) {
-    font-size: 40px;
+    font-size: 50px;
     color: $primaryColor;
-    margin-top: 30px;
+    margin-top: 20px;
   }
-  p:nth-child(3){
+  p:nth-child(3) {
     font-size: 16px;
     font-weight: 500;
     margin-top: 18px;
   }
-  p:last-child{
-    margin-top: 20px;
+  p:last-child {
+    margin-top: 30px;
     display: flex;
     justify-content: center;
-    button{
+    button {
       width: 94px;
     }
-    button:first-child{
+    button:first-child {
       margin-right: 10px;
     }
-    button:last-child{
+    button:last-child {
       margin-left: 10px;
     }
   }

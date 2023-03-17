@@ -12,6 +12,6 @@ export const ChainList = (p: o) => post('/getCreateChainHistoryList', p);
 export const SetWithdrawLog = (p:o) => post('/getChildTxInMainChain',p);
 //获取余额
 export const GetBalance = (p:o) => post('/getBalance',p);
+//获取签名
+export const SignAddress = (p:o) => post('/signAddress',p);
 
-
-// '/signAddress'

@@ -80,26 +80,26 @@ const Transactions = (): ReactElement<ReactNode> => {
                 </p>
             </Tooltip>,
         },
-        {
-            title: 'To',
-            key: 'to',
-            dataIndex: 'to',
-            render: (_, record) => <Tooltip placement="top" title={record.inner[0].toAddress}>
-                <p className="clickable" onClick={() => {
-                    alert('Outside')
-                }}>
-                    {record.inner[0].toAddress.substring(0, 6)}
-                    ...
-                    {record.inner[0].toAddress.substring(record.inner[0].toAddress.length - 6, record.inner[0].toAddress.length)}
-                </p>
-            </Tooltip>,
-        },
+        // {
+        //     title: 'To',
+        //     key: 'to',
+        //     dataIndex: 'to',
+        //     render: (_, record) => <Tooltip placement="top" title={record.inner[0].toAddress}>
+        //         <p className="clickable" onClick={() => {
+        //             alert('Outside')
+        //         }}>
+        //             {record.inner[0].toAddress.substring(0, 6)}
+        //             ...
+        //             {record.inner[0].toAddress.substring(record.inner[0].toAddress.length - 6, record.inner[0].toAddress.length)}
+        //         </p>
+        //     </Tooltip>,
+        // },
         {
             title: 'Amount',
             key: 'amount',
             dataIndex: 'amount',
             render: (_, record) => <p className="amount-oper">
-                {record.inner[0].decodeInput.name === 'DepositInMainChain' ? '' : '-'}{Number(record.inner[0].value) / 1e18}&nbsp;Pi
+                {Number(record.inner[0].value) / 1e18}&nbsp;Pi
             </p>,
             width: 108
         },
