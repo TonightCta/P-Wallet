@@ -1,4 +1,41 @@
-.stake-view{
-    min-height: 500px;
-    background-color: $textColor;
+.stake-view {
+  color: white;
+  .tab-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #131615;
+    z-index: 100;
+    ul {
+      display: inline-flex;
+      width: auto;
+      height: 30px;
+      border-radius: 20px;
+      background-color: $tableB;
+      li {
+        width: 100px;
+        border-radius: 20px;
+        text-align: center;
+        line-height: 30px;
+        font-size: 14px;
+        color: $textColor;
+        cursor: pointer;
+        transition: 0.3s all;
+      }
+      .active-tab {
+        background-color: $primaryColor;
+        color: white;
+      }
+    }
+  }
+  .stake-content {
+    height: calc(100vh - 172px);
+    overflow: auto;
+    padding-top: 60px;
+    padding-bottom: 20px;
+  }
+  .stake-content::-webkit-scrollbar {
+    display: none;
+  }
 }

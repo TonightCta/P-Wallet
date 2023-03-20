@@ -6,6 +6,8 @@ import EditView from './components/edit/index';
 import { PWallet } from './../../App';
 import { Type } from "../../utils/type";
 import JoinIndex from './components/join/index';
+import KeepAlive from 'react-activation'
+
 
 interface Tab {
     name: string,
@@ -50,7 +52,7 @@ const L2View = (): ReactElement<ReactNode> => {
     }, [])
     return (
         <div className="l2-view">
-            <div style={{position:'relative'}}>
+            <div style={{ position: 'relative' }}>
                 <div className="tab-list">
                     <ul>
                         {
@@ -72,9 +74,11 @@ const L2View = (): ReactElement<ReactNode> => {
                 </div>
                 <div className="inner-view">
                     {
-                        active === 0 && <HistoryView switchTab={(val: number) => {
-                            setActive(val)
-                        }} address={state.address as string}/> ||
+                        active === 0 && <KeepAlive>
+                            <HistoryView switchTab={(val: number) => {
+                                setActive(val)
+                            }} address={state.address as string} />
+                        </KeepAlive> ||
                         active === 1 && <CreatView switchTab={(val: number) => {
                             setActive(val)
                         }} /> ||

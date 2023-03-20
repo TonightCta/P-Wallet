@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './lang/index';
 import { ConfigProvider } from 'antd';
+import { AliveScope } from 'react-activation'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -16,7 +17,9 @@ root.render(
       colorPrimary: '#E10185',
     },
   }}>
-    <App />
+    <AliveScope>
+      <App />
+    </AliveScope>
   </ConfigProvider>
   // </React.StrictMode>
 );

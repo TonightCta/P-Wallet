@@ -30,7 +30,7 @@
     }
   }
   .inner-view {
-    height: calc(100vh - 112px);
+    height: calc(100vh - 172px);
     overflow: auto;
     padding-top: 50px;
     padding-bottom: 20px;
@@ -225,6 +225,29 @@
             color: $textColor;
           }
         }
+      }
+    }
+  }
+  .oper-btn {
+    padding: 20px 20px 80px;
+    background-color: $tableB;
+    border-radius: 8px;
+    margin-bottom: 40px;
+    .oper-name {
+      font-size: 20px;
+      font-weight: 500;
+      color: white;
+    }
+    p:last-child {
+      margin-top: 40px;
+      text-align: center;
+      button {
+        margin-right: 50px;
+        width: 120px;
+      }
+      button:last-child {
+        margin-right: 0;
+        margin-left: 50px;
       }
     }
   }

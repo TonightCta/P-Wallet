@@ -32,6 +32,7 @@ const JoinIndex = (): ReactElement<ReactNode> => {
         ...InputSource,
         from: state.address ? state.address as string : 'Wallet not connected',
     });
+    const [wait, setWait] = useState<boolean>(false);
     useEffect(() => {
         setInput({
             ...input,
@@ -65,12 +66,14 @@ const JoinIndex = (): ReactElement<ReactNode> => {
             error('Private key error')
             return
         };
+        setWait(true)
         const params = {
             _pubkey: input.public_key,
             _chainId: input.chain_id,
             _signature: result.result
         }
         const result_rpc = await join(params);
+        setWait(false)
         setVisible(true)
         setPass(result_rpc ? true : false);
         result_rpc && setInput({
@@ -136,7 +139,7 @@ const JoinIndex = (): ReactElement<ReactNode> => {
                         </p>
                     </li>
                     <li>
-                        <Button onClick={() => {
+                        <Button loading={wait} onClick={() => {
                             submitJoin()
                         }} block type="primary">{'Join'.toUpperCase()}</Button>
                     </li>

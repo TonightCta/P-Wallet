@@ -114,9 +114,10 @@ const MenuTab = (): ReactElement<ReactNode> => {
                         <Button type='primary' onClick={() => {
                             !state.address && connect()
                         }}>
-                            {state.address && <div className='avatar'>
+                            {state.address != null && <div className='avatar'>
                                 <Jazzicon diameter={18} seed={parseInt(state.address.slice(2, 10), 16)} />
-                            </div>}{!state.address
+                            </div>}
+                            {state.address == null
                                 ? 'Connect Wallet'
                                 : `${state.address.substring(0, 6)}...${state.address.substring(state.address.length - 6, state.address.length)}`
                             }

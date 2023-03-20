@@ -1,0 +1,52 @@
+.stake-inner {
+  .amount-msg {
+    display: flex;
+    justify-content: space-between;
+    li {
+      width: calc(33% - 50px / 3);
+      padding: 17px 0 24px;
+      background-color: $tableB;
+      text-align: center;
+      border-radius: 8px;
+      min-height: 104px;
+      p {
+        font-size: 20px;
+        color: $textColor;
+        font-weight: 500;
+      }
+      .value {
+        margin-top: 16px;
+        p {
+          font-size: 22px;
+          color: white;
+        }
+      }
+    }
+  }
+  .total-list {
+    padding: 20px;
+    background-color: $tableB;
+    border-radius: 8px;
+    margin-top: 30px;
+    .list-name {
+      font-size: 18px;
+      color: white;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      button {
+        border-radius: 8px;
+      }
+    }
+    .table-mine {
+      margin-top: 24px;
+      button {
+        width: 90px;
+        height: 20px;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+    }
+  }
+}

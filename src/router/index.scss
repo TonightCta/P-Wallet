@@ -25,8 +25,79 @@
       color: #333;
       text-align: center;
     }
-    button{
-        margin-top: 24px;
+    button {
+      margin-top: 24px;
+    }
+  }
+}
+.table-mine {
+  .ant-table-wrapper {
+    background-color: $tableB;
+    .ant-table {
+      background-color: $tableB;
+      border-radius: 8px;
+      .ant-table-thead {
+        tr {
+          th {
+            background-color: $tableB;
+            color: $textColor;
+            font-weight: 500;
+            border: 0;
+          }
+        }
+      }
+      .ant-table-tbody {
+        .ant-table-placeholder {
+          background-color: $tableB;
+          .ant-empty-description {
+            color: #888;
+          }
+          .ant-table-cell:hover {
+            background-color: rgba(0, 0, 0, 0);
+          }
+        }
+        .ant-table-placeholder:hover {
+          background-color: $tableB !important;
+        }
+        tr {
+          td {
+            border: 0;
+            color: white;
+          }
+        }
+        tr:hover {
+          background: #333 !important;
+        }
+      }
+    }
+  }
+  .ant-spin-spinning {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  .ant-spin {
+    max-height: none !important;
+  }
+  .ant-pagination {
+    button {
+      width: 100%!important;
+      height: 100%!important;
+    }
+    .ant-pagination-item {
+      a {
+        color: $textColor;
+      }
+    }
+    .ant-pagination-item-active {
+      background-color: $tableB;
+      a {
+        color: $primaryColor;
+      }
+    }
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      .ant-pagination-item-link {
+        color: $textColor;
+      }
     }
   }
 }

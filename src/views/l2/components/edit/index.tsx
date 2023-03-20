@@ -21,12 +21,13 @@ const EditView = (): ReactElement<ReactNode> => {
     const { state } = useContext(PWallet);
     const { set } = useChain();
     const [visible, setVisible] = useState<boolean>(false);
-    const [pass,setPass] = useState<boolean>(false);
+    const [pass, setPass] = useState<boolean>(false);
     const [input, setInput] = useState<Input>({
         ...InputSource,
         from: state.address ? state.address as string : 'Wallet not connected',
-        chain_id:state.last_creat as string
+        chain_id: state.last_creat as string
     });
+    const [wait, setWait] = useState<boolean>(false);
     const submitSet = async () => {
         if (!input.chain_id) {
             error('Please enter chain id');
@@ -36,12 +37,14 @@ const EditView = (): ReactElement<ReactNode> => {
             error('Please enter reward amount');
             return
         };
+        setWait(true)
         const params = {
             _chain_id: input.chain_id,
             _reward: DecimalToHex(input.amount as number)
         }
         const result = await set(params);
         setVisible(true)
+        setWait(false);
         setPass(result ? true : false);
         result && setInput({
             ...InputSource,
@@ -83,7 +86,7 @@ const EditView = (): ReactElement<ReactNode> => {
                         </p>
                     </li>
                     <li>
-                        <Button block onClick={() => {
+                        <Button loading={wait} block onClick={() => {
                             submitSet()
                         }} type="primary">{'Confirm'.toUpperCase()}</Button>
                     </li>

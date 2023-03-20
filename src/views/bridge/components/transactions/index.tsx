@@ -2,13 +2,14 @@ import { ReactElement, ReactNode, useEffect, useState, useContext } from "react"
 import { Button, Table, Tooltip } from 'antd';
 import { ColumnsType } from "antd/es/table";
 import { TransactionsLog } from '../../../../request/api';
-import { DateConvert } from '../../../../utils/index'
+import { DateConvert, OutSide } from '../../../../utils/index'
 import { useSwitchChain, useTransfer } from './../../../../utils/hooks';
 import { PWallet } from './../../../../App';
 import { Type } from "../../../../utils/type";
 
 
 interface Data {
+    chainId: string,
     decodeInput: {
         name: string,
     },
@@ -27,16 +28,16 @@ interface DataType {
 }
 
 const Transactions = (): ReactElement<ReactNode> => {
-    const { state,dispatch } = useContext(PWallet)
+    const { state, dispatch } = useContext(PWallet)
     const columns: ColumnsType<DataType> = [
         {
             title: 'Txn Hash',
             dataIndex: 'hash',
             key: 'hash',
-            width:250,
+            width: 250,
             render: (_, record) => <Tooltip placement="top" title={record.inner[1] ? record.inner[1].hash : record.inner[0].hash}>
                 <p className="clickable" onClick={() => {
-                    alert('Outside')
+                    OutSide(record.inner[1] ? record.inner[1].hash : record.inner[0].hash, Number(record.inner[1].chainId))
                 }}>
                     {record.inner[1]
                         ? record.inner[1].hash.substring(0, 10)
@@ -52,7 +53,7 @@ const Transactions = (): ReactElement<ReactNode> => {
         {
             title: 'Method',
             dataIndex: 'method',
-            width:120,
+            width: 120,
             key: 'method',
             render: (_, record) => <p>
                 {record.inner[0].decodeInput.name === 'DepositInMainChain' ? 'Deposit' : 'Withdraw'}
@@ -72,7 +73,7 @@ const Transactions = (): ReactElement<ReactNode> => {
             dataIndex: 'from',
             render: (_, record) => <Tooltip placement="top" title={record.inner[0].fromAddress}>
                 <p className="clickable" onClick={() => {
-                    alert('Outside')
+                    OutSide(record.inner[0].fromAddress, Number(record.inner[0].chainId))
                 }}>
                     {record.inner[0].fromAddress.substring(0, 6)}
                     ...
@@ -126,7 +127,7 @@ const Transactions = (): ReactElement<ReactNode> => {
     ];
     //数据列表
     const [data, setData] = useState<DataType[]>([]);
-    const [waitResult,setWaitResult] = useState<boolean>(false);
+    const [waitResult, setWaitResult] = useState<boolean>(false);
     const queryList = async () => {
         setWaitResult(true)
         const params = {
@@ -150,23 +151,23 @@ const Transactions = (): ReactElement<ReactNode> => {
     const resendTransfer = async (_type: string, _hash: string, _amount: number) => {
         await switchC(_type === 'DepositInMainChain' ? 8007736 : 2099156);
         dispatch({
-            type:Type.SET_LAST_TRANSFER_CHAIN,
-            payload:{
-                last_transfer_chain:_type === 'DepositInMainChain' ? 8007736 : 2099156
+            type: Type.SET_LAST_TRANSFER_CHAIN,
+            payload: {
+                last_transfer_chain: _type === 'DepositInMainChain' ? 8007736 : 2099156
             }
         })
         _type === 'DepositInMainChain' ? takeDepositMain(_hash) : takeWithdrawChild(_amount, _hash)
     };
     useEffect(() => {
-        if(state.address == 'null' || !state.address){
+        if (state.address == 'null' || !state.address) {
             return
         };
         queryList();
-    }, [state.address,state.reload_logs])
+    }, [state.address, state.reload_logs])
     return (
         <div className="transactions-content">
             <p className="table-name">Transactions</p>
-            <div className="table-content">
+            <div className="table-content table-mine">
                 <Table columns={columns} loading={waitResult} pagination={{ pageSize: 10 }} dataSource={data} />
             </div>
         </div>

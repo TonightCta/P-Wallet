@@ -18,3 +18,7 @@ export const DecimalToHex = (_num: number): string => {
 export const error = (_text: string) => {
     message.error(_text)
 };
+//区块链浏览器查询
+export const OutSide = (_key:string,_chain_id:number) => {
+    window.open(`https://piscan.plian.org/index.html?key=${_key}&chain=${_chain_id}`)
+}

@@ -1,0 +1,22 @@
+.public-modal {
+    text-align: center;
+    .modal-title {
+      font-size: 20px;
+      color: $primaryColor;
+      font-weight: bold;
+    }
+    .modal-icon {
+      font-size: 50px;
+      color: $primaryColor;
+      margin-top: 20px;
+    }
+    .modal-text{
+        font-size: 14px;
+        color: $textColor;
+        margin-top: 20px;
+    }
+    p:last-child {
+      margin-top: 30px;
+    }
+  }
+  

@@ -1,0 +1,95 @@
+.stake-overview {
+  .overview-data {
+    margin-bottom: 120px;
+    ul {
+      display: flex;
+      li {
+        margin-right: 100px;
+        p:first-child {
+          color: $textColor;
+          font-weight: 500;
+        }
+        .value {
+          margin-top: 20px;
+          p {
+            font-size: 22px;
+            color: white;
+          }
+        }
+      }
+      li:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+  .list-data {
+    padding: 20px;
+    background-color: $tableB;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    .data-title {
+      font-size: 18px;
+      color: white;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      span {
+        color: $primaryColor;
+      }
+      .ant-spin {
+        transform: translateY(3px);
+      }
+    }
+    .table-mine {
+      margin-top: 24px;
+      button {
+        border-radius: 8px;
+        font-size: 12px;
+        height: 20px;
+        width: 90px;
+      }
+      .need-left {
+        margin-left: 20px;
+      }
+    }
+  }
+}
+.join-modal {
+  text-align: center;
+  .modal-title {
+    font-size: 20px;
+    color: $primaryColor;
+    font-weight: bold;
+  }
+  ul {
+    margin-top: 20px;
+    li {
+      margin-bottom: 16px;
+      width: 100%;
+      text-align: left;
+      .input-lable {
+        font-size: 14px;
+        color: $textColor;
+      }
+      input {
+        width: 100%;
+        height: 40px;
+        border: 1px solid #888;
+        border-radius: 8px;
+        margin-top: 12px;
+        padding-left: 16px;
+      }
+    }
+    li:last-child {
+      text-align: center;
+      margin-top: 30px;
+      button {
+        margin-right: 10px;
+      }
+      button:last-child {
+        margin-left: 10px;
+        margin-right: 0;
+      }
+    }
+  }
+}

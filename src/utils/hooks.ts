@@ -4,6 +4,7 @@ import { PWallet } from "../App";
 import { IResponse, Type } from "./type";
 import TransferABI from './abi/transfer_abi.json';
 import ChainABI from './abi/chain_abi.json'
+import StakeABI from './abi/stake.json'
 import { gas, gasPrice } from "./type";
 import { SetWithdrawLog } from "../request/api";
 import { GetBalance } from '../request/api';
@@ -33,8 +34,23 @@ interface SetNedd {
 
 const win: any = window;
 const { ethereum } = win;
+// const gas_price: string = DecimalToHex(10 * Math.pow(10, 9));
 
-
+//钱包检查
+export const useCheckWallet = () => {
+    const { dispatch } = useContext(PWallet);
+    const checkWallet = () => {
+        dispatch({
+            type: Type.SET_IS_WALLET,
+            payload: {
+                is_wallet: ethereum ? 1 : 0
+            }
+        })
+    };
+    return {
+        checkWallet: checkWallet
+    }
+}
 //余额查询
 export const useBalance = () => {
     const { dispatch } = useContext(PWallet);
@@ -49,7 +65,7 @@ export const useBalance = () => {
     const inquireInner = async () => {
         update(true)
         setTimeout(async () => {
-            if (!ethereum.selectedAddress) {
+            if (!ethereum || !ethereum.selectedAddress) {
                 update(false)
                 return
             }
@@ -92,6 +108,9 @@ export const useBalance = () => {
 export const useCheckChain = () => {
     const { state, dispatch } = useContext(PWallet);
     const next = () => {
+        if (!ethereum) {
+            return
+        }
         setTimeout(() => {
             if (ethereum.selectedAddress) {
                 const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
@@ -143,7 +162,6 @@ export const useConnect = () => {
     const { check } = useCheckChain();
     const connectInner = async (): Promise<void> => {
         if (!ethereum) {
-            message.warning('Your browser has not installed the wallet');
             return
         };
         try {
@@ -181,6 +199,9 @@ export const useWeb3 = () => {
     const { inquire } = useBalance();
     // 账户监听
     const accountChange = () => {
+        if (!ethereum) {
+            return
+        }
         ethereum.on('accountsChanged', (accounts: string[]) => {
             dispatch({
                 type: Type.SET_ADDRESS,
@@ -198,6 +219,9 @@ export const useWeb3 = () => {
     };
     // 切换公链监听
     const chainChange = () => {
+        if (!ethereum) {
+            return
+        }
         ethereum.on('chainChanged', () => {
             check();
         })
@@ -348,20 +372,26 @@ export const useTransfer = () => {
             gasPrice: gasPrice
         };
         updateHash('1')
-        const result = await contract.methods.DepositInMainChain('child_0').send(params);
-        if (result['transactionHash']) {
-            updateHash(result['transactionHash'])
-            const wait = await switchC(8007736);
-            dispatch({
-                type: Type.SET_LAST_TRANSFER_CHAIN,
-                payload: {
-                    last_transfer_chain: 8007736
-                }
-            })
-            wait == null && takeDepositMain(result['transactionHash'])
-        } else {
+        contract.methods.DepositInMainChain('child_0').send(params).then(async (result: any) => {
+            if (result['transactionHash']) {
+                updateHash(result['transactionHash'])
+                const wait = await switchC(8007736);
+                dispatch({
+                    type: Type.SET_LAST_TRANSFER_CHAIN,
+                    payload: {
+                        last_transfer_chain: 8007736
+                    }
+                })
+                wait == null && takeDepositMain(result['transactionHash'])
+            } else {
+                updateWait('error', true)
+                updateHash('')
+            }
+        }).catch((err: any) => {
             updateWait('error', true)
-        }
+            updateHash('')
+        })
+
     };
     //主链充值 - 接收
     const takeDepositMain = async (hash: string) => {
@@ -388,7 +418,6 @@ export const useTransfer = () => {
                 }
             })
         }).on('error', (error: any) => {
-            console.log(error)
             if (error.message.indexOf('50 blocks') > -1) {
                 // setShowSuccess(true)
                 checkTransfer(_local_hash)
@@ -415,27 +444,35 @@ export const useTransfer = () => {
             gasPrice: gasPrice
         };
         updateHash('1')
-        const result = await contract.methods.WithdrawFromChildChain('child_0').send(params);
-        if (result['transactionHash']) {
-            updateHash(result['transactionHash'])
-            const timer = setInterval(async () => {
-                const service: any = await SetWithdrawLog({
-                    txHash: result['transactionHash'],
-                    chainId: 1
-                });
-                clearInterval(timer)
-                if (service.result === 'success') {
-                    const wait = await switchC(2099156);
-                    dispatch({
-                        type: Type.SET_LAST_TRANSFER_CHAIN,
-                        payload: {
-                            last_transfer_chain: 2099156
-                        }
-                    })
-                    wait == null && takeWithdrawChild(amount, result['transactionHash'])
-                }
-            }, 5000);
-        }
+        contract.methods.WithdrawFromChildChain('child_0').send(params).then(async (result: any) => {
+            if (result['transactionHash']) {
+                updateHash(result['transactionHash'])
+                const timer = setInterval(async () => {
+                    const service: any = await SetWithdrawLog({
+                        txHash: result['transactionHash'],
+                        chainId: 1
+                    });
+                    clearInterval(timer)
+                    if (service.result === 'success') {
+                        const wait = await switchC(2099156);
+                        dispatch({
+                            type: Type.SET_LAST_TRANSFER_CHAIN,
+                            payload: {
+                                last_transfer_chain: 2099156
+                            }
+                        })
+                        wait == null && takeWithdrawChild(amount, result['transactionHash'])
+                    }
+                }, 5000);
+            } else {
+                updateHash('')
+                updateWait('error', true)
+            }
+        }).catch((err: any) => {
+            updateHash('')
+            updateWait('error', true)
+        })
+
     };
     //子链提现 - 接收
     const takeWithdrawChild = async (amount: number, hash: string) => {
@@ -466,7 +503,8 @@ export const useTransfer = () => {
                 // setShowSuccess(true)
                 checkTransfer(_local_hash)
             } else {
-                updateWait('error', true)
+                updateWait('error', true);
+                updateHash('')
             }
         })
     };
@@ -508,33 +546,84 @@ export const useTransfer = () => {
 
 //链操作
 export const useChain = () => {
-    const gas_price: string = DecimalToHex(10 * Math.pow(10, 9));
     const { state } = useContext(PWallet);
     //minValidators minDepositAmount startBlock endBlock
     const contract = new state.web3.eth.Contract(ChainABI, '0x0000000000000000000000000000000000000065');
     const send_data = {
         from: state.address,
         gas: gas,
-        gasPrice: gas_price
+        gasPrice: gasPrice
     }
     //创建子链
-    const inner = async (params: ChainNeed) => {
-        const result = await contract.methods.CreateChildChain(params._chain_id, params._min_validators, params._min_depositAmount, params._start_block, params._end_block).send(send_data)
-        return result
+    const inner = async (params: ChainNeed): Promise<number> => {
+        return new Promise(async (resolve, reject) => {
+            contract.methods.CreateChildChain(params._chain_id, params._min_validators, params._min_depositAmount, params._start_block, params._end_block).send(send_data).then((response: unknown) => {
+                resolve(1)
+            }).catch((error: any) => {
+                resolve(0)
+            })
+        })
     };
     //加入子链
-    const join = async (params: JoinNeed) => {
-        const result = await contract.methods.JoinChildChain(params._pubkey, params._chainId, params._signature).send(send_data);
-        return result
+    const join = async (params: JoinNeed): Promise<number> => {
+        return new Promise(async (resolve, reject) => {
+            contract.methods.JoinChildChain(params._pubkey, params._chainId, params._signature).send(send_data).then((response: unknown) => {
+                resolve(1)
+            }).catch((error: any) => {
+                resolve(0)
+            })
+        })
     };
     //设置区块奖励
-    const set = async (params: SetNedd) => {
-        const result = await contract.methods.SetBlockReward(params._chain_id, params._reward).send(send_data);
-        return result
+    const set = async (params: SetNedd): Promise<number> => {
+        return new Promise(async (resolve, reject) => {
+            contract.methods.SetBlockReward(params._chain_id, params._reward).send(send_data).then((response: unknown) => {
+                resolve(1)
+            }).catch((error: any) => {
+                resolve(0)
+            })
+        })
     }
     return {
         create: inner,
         join: join,
         set: set
+    }
+};
+//质押
+export const useStake = () => {
+    const { state } = useContext(PWallet);
+    const contract = new state.web3.eth.Contract(StakeABI, '0x0000000000000000000000000000000000000065');
+    const send_data = {
+        from: state.address,
+        gas: gas,
+        gasPrice: gasPrice
+    };
+    const receive = async (): Promise<number> => {
+        return new Promise(async (resolve, reject) => {
+            contract.methods.ExtractReward(send_data.from).send(send_data).then((response: unknown) => {
+                resolve(1)
+            }).catch((err: any) => {
+                resolve(0)
+            })
+        });
+    };
+    const join = async (_address: string, _amount: number): Promise<number> => {
+        return new Promise(async (resolve, reject) => {
+            const join_data = {
+                ...send_data,
+                amount: '0x' + DecimalToHex(state.web3.utils.toWei(_amount, 'ether'))
+            };
+            contract.methods.Delegate(_address).send(join_data).then((response: unknown) => {
+                resolve(1)
+            }).catch((error: any) => {
+                resolve(0)
+            })
+        })
+
+    }
+    return {
+        receive: receive,
+        join: join
     }
 }

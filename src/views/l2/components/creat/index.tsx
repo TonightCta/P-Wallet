@@ -48,6 +48,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
         from: state.address ? state.address as string : 'Wallet not connected',
     });
     const [pass, setPass] = useState<boolean>(false);
+    const [wait, setWait] = useState<boolean>(false);
     const submitCreate = async () => {
         if (state.default_chain != '2099156') {
             error('Transaction not allowed in child chain');
@@ -81,6 +82,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
             error('Startup cost is not meet the required amount (100000 PI)');
             return
         };
+        setWait(true)
         const params = {
             _chain_id: String(input.chain_id),
             _min_validators: "0x" + DecimalToHex(input.min_v as number),
@@ -89,6 +91,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
             _end_block: "0x" + DecimalToHex(input.end_b as number)
         }
         const result = await create(params);
+        setWait(false)
         setJoinbox(true)
         setPass(result ? true : false);
         result && dispatch({
@@ -96,7 +99,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
             payload: {
                 last_creat: input.chain_id as string
             }
-        })
+        });
         result && setInput({
             ...InputSource,
             from: state.address as string,
@@ -182,7 +185,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
                         </p>
                     </li>
                     <li>
-                        <Button block type="primary" onClick={() => {
+                        <Button block loading={wait} type="primary" onClick={() => {
                             submitCreate()
                         }}>{'Create'.toUpperCase()}</Button>
                     </li>
