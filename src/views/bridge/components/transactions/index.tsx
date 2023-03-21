@@ -34,18 +34,18 @@ const Transactions = (): ReactElement<ReactNode> => {
             title: 'Txn Hash',
             dataIndex: 'hash',
             key: 'hash',
-            width: 250,
+            width: 300,
             render: (_, record) => <Tooltip placement="top" title={record.inner[1] ? record.inner[1].hash : record.inner[0].hash}>
                 <p className="clickable" onClick={() => {
                     OutSide(record.inner[1] ? record.inner[1].hash : record.inner[0].hash, Number(record.inner[1].chainId))
                 }}>
                     {record.inner[1]
-                        ? record.inner[1].hash.substring(0, 10)
-                        : record.inner[0].hash.substring(0, 10)}
+                        ? record.inner[1].hash.substring(0, 15)
+                        : record.inner[0].hash.substring(0, 15)}
                     ...
                     {record.inner[1]
-                        ? record.inner[1].hash.substring(record.inner[1].hash.length - 10, record.inner[1].hash.length)
-                        : record.inner[0].hash.substring(record.inner[0].hash.length - 10, record.inner[0].hash.length)
+                        ? record.inner[1].hash.substring(record.inner[1].hash.length - 15, record.inner[1].hash.length)
+                        : record.inner[0].hash.substring(record.inner[0].hash.length - 15, record.inner[0].hash.length)
                     }
                 </p>
             </Tooltip>,
@@ -63,6 +63,7 @@ const Transactions = (): ReactElement<ReactNode> => {
             title: 'TimeStamp',
             dataIndex: 'date',
             key: 'date',
+            width:180,
             render: (_, record) => <p>
                 {DateConvert(Number(record.inner[0].timestamp))}
             </p>
@@ -71,13 +72,14 @@ const Transactions = (): ReactElement<ReactNode> => {
             title: 'From',
             key: 'from',
             dataIndex: 'from',
+            width:250,
             render: (_, record) => <Tooltip placement="top" title={record.inner[0].fromAddress}>
                 <p className="clickable" onClick={() => {
                     OutSide(record.inner[0].fromAddress, Number(record.inner[0].chainId))
                 }}>
-                    {record.inner[0].fromAddress.substring(0, 6)}
+                    {record.inner[0].fromAddress.substring(0, 10)}
                     ...
-                    {record.inner[0].fromAddress.substring(record.inner[0].fromAddress.length - 6, record.inner[0].fromAddress.length)}
+                    {record.inner[0].fromAddress.substring(record.inner[0].fromAddress.length - 10, record.inner[0].fromAddress.length)}
                 </p>
             </Tooltip>,
         },
@@ -130,21 +132,23 @@ const Transactions = (): ReactElement<ReactNode> => {
     const [waitResult, setWaitResult] = useState<boolean>(false);
     const queryList = async () => {
         setWaitResult(true)
-        const params = {
-            address: state.address,
-            chainId: '-1',
-            pageNo: 1,
-            pageSize: 100
-        }
-        const result = await TransactionsLog(params);
-        setWaitResult(false)
-        const data = result.data.map((e: any, index: number) => {
-            return e = {
-                key: index,
-                inner: e
+        setTimeout(async () => {
+            const params = {
+                address: state.address,
+                chainId: '-1',
+                pageNo: 1,
+                pageSize: 100
             }
-        });
-        setData([...data]);
+            const result = await TransactionsLog(params);
+            setWaitResult(false)
+            const data = result.data.map((e: any, index: number) => {
+                return e = {
+                    key: index,
+                    inner: e
+                }
+            });
+            setData([...data]);
+        }, 300)
     };
     const { takeDepositMain, takeWithdrawChild } = useTransfer();
     const { switchC } = useSwitchChain()

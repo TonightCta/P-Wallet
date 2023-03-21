@@ -33,6 +33,7 @@ export const defaultState: State = {
     last_creat: sessionStorage.getItem('last_creat') || '',
     is_wallet: Number(sessionStorage.getItem('is_wallet')) || 1,
     reward_total: Number(sessionStorage.getItem('reward_total')) || 0,
+    is_dev: Number(sessionStorage.getItem('is_dev')) || 0
 };
 
 export const defaultContext: Context = {
@@ -91,6 +92,9 @@ export const initState = (state: State, action: IAction) => {
         case Type.SET_REWARD_TOTAL:
             sessionStorage.setItem('reward_total', String(payload.reward_total));
             return { ...state, reward_total: payload.reward_total }
+        case Type.SET_IS_DEV:
+            sessionStorage.setItem('is_dev', String(payload.is_dev));
+            return { ...state, is_dev: payload.is_dev }
         default:
             return state;
     }

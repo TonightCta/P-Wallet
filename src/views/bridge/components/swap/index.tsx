@@ -1,6 +1,6 @@
 import { Button, message } from "antd";
 import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
-import { useSwitchChain } from "../../../../utils/hooks";
+import { useConnect, useSwitchChain } from "../../../../utils/hooks";
 import { Type } from "../../../../utils/type";
 import { PWallet } from './../../../../App';
 import { useTransfer } from "../../../../utils/hooks";
@@ -10,35 +10,47 @@ const Swap = (): ReactElement<ReactNode> => {
     const { state, dispatch } = useContext(PWallet);
     const { switchC } = useSwitchChain();
     const [amount, setAmount] = useState<number | string>('');
-    const [selectedChain,setSelectedChain] = useState<number>(Number(state.default_chain));
-    const { depositMainChain,withdrawChildChain,check } = useTransfer();
+    const { connect } = useConnect();
+    const [selectedChain, setSelectedChain] = useState<number>(Number(state.default_chain));
+    const { depositMainChain, withdrawChildChain, check } = useTransfer();
     //发送交易 - 充值
     const makeTransfer = async () => {
+        if (!state.address) {
+            await connect()
+        };
         if (!amount) {
             message.error('Please enter the amount');
             return
         };
-        state.transfer_msg?.transfer_type === 0 
+        if (selectedChain === 2099156 && amount > (state.account_balance?.main_balance as number)) {
+            message.error(`Your available balance is ${state.account_balance?.main_balance} PI`);
+            return
+        }
+        if (selectedChain === 8007736 && amount > (state.account_balance?.child_balance as number)) {
+            message.error(`Your available balance is ${state.account_balance?.child_balance} PI`);
+            return
+        }
+        state.transfer_msg?.transfer_type === 0
             ? depositMainChain(amount as number)
             : withdrawChildChain(amount as number)
     };
     useEffect(() => {
-        if(state.transfer_hash){
+        if (state.transfer_hash) {
             dispatch({
-                type:Type.SET_WAITING,
-                payload:{
-                    waiting:{
-                        type:'wait',
-                        visible:true
+                type: Type.SET_WAITING,
+                payload: {
+                    waiting: {
+                        type: 'wait',
+                        visible: true
                     }
                 }
             });
             state.transfer_hash !== '1' && check()
         }
-    },[])
+    }, [])
     useEffect(() => {
         setAmount('')
-    },[state.reload_logs])
+    }, [state.reload_logs])
     return (
         <div className="swap-content">
             <div className="tab-box">
@@ -47,7 +59,7 @@ const Swap = (): ReactElement<ReactNode> => {
                         ['Deposit', 'Withdraw'].map((item: string, index: number) => {
                             return (
                                 <li key={index} className={`${state.transfer_msg!.transfer_type === index ? 'active-tab' : ''}`} onClick={async () => {
-                                    const chain_id : number = item === 'Deposit' ? 2099156 : 8007736
+                                    const chain_id: number = item === 'Deposit' ? 2099156 : 8007736
                                     const result = await switchC(chain_id)
                                     if (result != null) {
                                         return
@@ -90,7 +102,7 @@ const Swap = (): ReactElement<ReactNode> => {
                     makeTransfer()
                 }} type="primary">{('Enter an amount').toUpperCase()}</Button>
             </div>
-            <WaitModal/>
+            <WaitModal />
         </div>
     )
 };

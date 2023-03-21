@@ -9,6 +9,7 @@ import { gas, gasPrice } from "./type";
 import { SetWithdrawLog } from "../request/api";
 import { GetBalance } from '../request/api';
 import { DecimalToHex } from ".";
+import { CalendarOutlined } from "@ant-design/icons";
 
 
 interface BResult extends IResponse {
@@ -53,7 +54,7 @@ export const useCheckWallet = () => {
 }
 //余额查询
 export const useBalance = () => {
-    const { dispatch } = useContext(PWallet);
+    const { state, dispatch } = useContext(PWallet);
     const update = (bol: boolean) => {
         dispatch({
             type: Type.SET_BALANCE_WAIT,
@@ -77,6 +78,14 @@ export const useBalance = () => {
                 address: ethereum.selectedAddress,
                 chainId: 1
             });
+            const devBalance: number = Number(await state.web3.eth.getBalance(state.address)) / 1e18;
+            console.log(devBalance)
+            dispatch({
+                type: Type.SET_IS_DEV,
+                payload: {
+                    is_dev: devBalance > 1e5 ? 1 : 0
+                }
+            })
             dispatch({
                 type: Type.SET_BALANCE,
                 payload: {
@@ -84,7 +93,8 @@ export const useBalance = () => {
                         main_balance: Number(result_main.data),
                         main_balance_usdt: Number(result_main.usdt),
                         child_balance: Number(result_child.data),
-                        child_balance_usdt: Number(result_child.usdt)
+                        child_balance_usdt: Number(result_child.usdt),
+                        dev_balance: devBalance
                     }
                 }
             })
@@ -108,10 +118,10 @@ export const useBalance = () => {
 export const useCheckChain = () => {
     const { state, dispatch } = useContext(PWallet);
     const next = () => {
-        if (!ethereum) {
-            return
-        }
         setTimeout(() => {
+            if (!ethereum) {
+                return
+            }
             if (ethereum.selectedAddress) {
                 const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
                 const isUseChain = chain_id === 2099156 || chain_id === 8007736;
@@ -199,32 +209,38 @@ export const useWeb3 = () => {
     const { inquire } = useBalance();
     // 账户监听
     const accountChange = () => {
-        if (!ethereum) {
-            return
-        }
-        ethereum.on('accountsChanged', (accounts: string[]) => {
-            dispatch({
-                type: Type.SET_ADDRESS,
-                payload: {
-                    address: accounts.length > 0 ? accounts[0] : null
+        setTimeout(() => {
+            if (!ethereum) {
+                return
+            }
+            ethereum.on('accountsChanged', (accounts: string[]) => {
+                dispatch({
+                    type: Type.SET_ADDRESS,
+                    payload: {
+                        address: accounts.length > 0 ? accounts[0] : null
+                    }
+                });
+                if (accounts.length === 0) {
+                    window.localStorage.removeItem('address');
+                    window.location.reload();
+                } else {
+                    inquire();
                 }
             });
-            if (accounts.length === 0) {
-                window.localStorage.removeItem('address');
-                window.location.reload();
-            } else {
-                inquire();
-            }
-        });
+        }, 200)
     };
     // 切换公链监听
     const chainChange = () => {
-        if (!ethereum) {
-            return
-        }
-        ethereum.on('chainChanged', () => {
-            check();
-        })
+        setTimeout(() => {
+            if (!ethereum) {
+                return
+            }
+            ethereum.on('chainChanged', (res: any) => {
+                inquire();
+                check();
+
+            });
+        }, 200)
         // ethereum.on('disconnect', (a: any) => {
         //     console.log(a)
         // })
@@ -290,17 +306,18 @@ export const useSwitchChain = () => {
                 const params = [
                     {
                         chainId: state.web3.utils.toHex(chain_id ? chain_id : chain_list[0].chain_id), // A 0x-prefixed hexadecimal string
-                        chainName: chain_id ? withChainID.chain : chain_list[0].chainName,
+                        chainName: chain_id ? withChainID[0].chainName : chain_list[0].chainName,
                         nativeCurrency: {
                             name: 'PI',
                             symbol: 'PI', // 2-6 characters long
                             decimals: 18,
                         },
-                        rpcUrls: chain_id ? withChainID.rpcUrls : chain_list[0].rpcUrls,
-                        blockExplorerUrls: chain_id ? withChainID.blockExplorerUrls : chain_list[0].blockExplorerUrls,
+                        rpcUrls: chain_id ? withChainID[0].rpcUrls : chain_list[0].rpcUrls,
+                        blockExplorerUrls: chain_id ? withChainID[0].blockExplorerUrls : chain_list[0].blockExplorerUrls,
                     }
                 ]
                 try {
+                    console.log(params)
                     await ethereum.request({
                         method: "wallet_addEthereumChain",
                         params: params,
@@ -593,6 +610,7 @@ export const useChain = () => {
 //质押
 export const useStake = () => {
     const { state } = useContext(PWallet);
+    const { inquire } = useBalance();
     const contract = new state.web3.eth.Contract(StakeABI, '0x0000000000000000000000000000000000000065');
     const send_data = {
         from: state.address,
@@ -602,7 +620,8 @@ export const useStake = () => {
     const receive = async (): Promise<number> => {
         return new Promise(async (resolve, reject) => {
             contract.methods.ExtractReward(send_data.from).send(send_data).then((response: unknown) => {
-                resolve(1)
+                resolve(1);
+                inquire()
             }).catch((err: any) => {
                 resolve(0)
             })
@@ -616,14 +635,29 @@ export const useStake = () => {
             };
             contract.methods.Delegate(_address).send(join_data).then((response: unknown) => {
                 resolve(1)
+                inquire()
             }).catch((error: any) => {
                 resolve(0)
             })
         })
-
-    }
+    };
+    const cancel = (_address: string, _amount: number): Promise<number> => {
+        return new Promise(async (resolve, reject) => {
+            const join_data = {
+                ...send_data,
+                amount: '0x' + DecimalToHex(state.web3.utils.toWei(_amount, 'ether'))
+            };
+            contract.methods.CancelDelegate(_address).send(join_data).then((response: unknown) => {
+                resolve(1)
+                inquire()
+            }).catch((error: any) => {
+                resolve(0)
+            })
+        })
+    };
     return {
         receive: receive,
-        join: join
+        join: join,
+        cancel: cancel
     }
 }

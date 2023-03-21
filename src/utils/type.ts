@@ -12,7 +12,8 @@ export interface Balance {
     main_balance: number,
     main_balance_usdt: number,
     child_balance: number,
-    child_balance_usdt: number
+    child_balance_usdt: number,
+    dev_balance:number
 }
 export interface State {
     web3?: any,
@@ -32,7 +33,8 @@ export interface State {
     l2_active?: number,
     last_creat?: string,
     is_wallet?: number,
-    reward_total?:number
+    reward_total?:number,
+    is_dev?:number
 }
 
 export enum Type {
@@ -52,7 +54,8 @@ export enum Type {
     SET_L2_ACTIVE = 'set_l2_active',
     SET_LAST_CREAT = 'set_last_creat',
     SET_IS_WALLET = 'set_is_wallet',
-    SET_REWARD_TOTAL = 'set_rewark_total'
+    SET_REWARD_TOTAL = 'set_rewark_total',
+    SET_IS_DEV = 'set_is_dev'
 };
 
 export interface IAction {

@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode, useState, useContext } from "react";
 import { Button, message, Modal, Tooltip } from 'antd'
 import { PWallet } from './../../../../App';
-import { useChain } from './../../../../utils/hooks';
+import { useChain, useConnect } from './../../../../utils/hooks';
 import { DecimalToHex, error } from "../../../../utils";
 import { CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Type } from "../../../../utils/type";
@@ -42,6 +42,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
     const { state, dispatch } = useContext(PWallet);
     const [joinBox, setJoinbox] = useState<boolean>(false);
     const { create } = useChain();
+    const { connect } = useConnect();
     //创建子链
     const [input, setInput] = useState<StepOne>({
         ...InputSource,
@@ -50,6 +51,9 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
     const [pass, setPass] = useState<boolean>(false);
     const [wait, setWait] = useState<boolean>(false);
     const submitCreate = async () => {
+        if (!state.address) {
+            await connect();
+        }
         if (state.default_chain != '2099156') {
             error('Transaction not allowed in child chain');
             return
@@ -106,8 +110,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
         });
         // setStep(1)
     }
-    const CreateStepOne = (): ReactElement => {
-
+    const createStepOne = (): ReactElement => {
         return (
             <div className="create-step-one public-input">
                 <ul>
@@ -139,7 +142,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
                             }} placeholder="Chain ID" />
                         </p>
                     </li>
-                    <li>
+                    <li key="min">
                         <p className="lable">Min Validators</p>
                         <p>
                             <input type="number" onWheel={event => event.currentTarget.blur()} value={input.min_v} onChange={(e) => {
@@ -220,7 +223,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
     return (
         <div className="creat-content public-content">
             <p className="package-title">Create Child Chain</p>
-            <CreateStepOne />
+            {createStepOne()}
             {/* {
                 step === 0 ?  : <CreateStepTwo />
             } */}

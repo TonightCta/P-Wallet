@@ -8,7 +8,9 @@ import ModalBox from './../../../../../components/modal/index';
 interface Props {
     address: string,
     visible: number,
+    cancel?: boolean,
     onClose: (val: number) => void,
+    max?: number
 }
 
 interface Input {
@@ -32,7 +34,7 @@ const JoinModal = (props: Props) => {
         text: '',
         type: ''
     })
-    const { join } = useStake();
+    const { join, cancel } = useStake();
     const [input, setInput] = useState<Input>({
         address: props.address,
         amount: '',
@@ -40,6 +42,7 @@ const JoinModal = (props: Props) => {
     useEffect(() => {
         props.visible === 1 && setVisible(true)
     }, [props.visible]);
+    //加入质押
     const submitJoin = async () => {
         if (!input.amount) {
             error('Please enter amount');
@@ -66,6 +69,25 @@ const JoinModal = (props: Props) => {
         });
         setVisible(false);
     };
+    // 取消质押
+    const submitCancel = async () => {
+        if (!input.amount) {
+            error('Please enter amount');
+            return
+        }
+        if (input.amount > (props.max as number)) {
+            error(`The maximum amount that can be canceled is ${props.max} PI`)
+            return
+        };
+        const result = await cancel(props.address, input.amount as number);
+        setResult({
+            visible: 1,
+            title: result ? 'Already Submitted' : 'Failed To Cancel',
+            type: result ? 'success' : 'error',
+            text: result ? 'Your application has been submitted, please wait for block confirmation' : 'Block exception, please try again later'
+        });
+        setVisible(false);
+    }
     useEffect(() => {
         !visible && setInput({
             ...input,
@@ -76,7 +98,7 @@ const JoinModal = (props: Props) => {
         <div>
             <Modal title={null} footer={null} width={500} centered={true} closable={false} open={visible}>
                 <div className="join-modal">
-                    <p className="modal-title">Confirm To Join</p>
+                    <p className="modal-title">{props.cancel ? 'Confirm To Cancel' : 'Confirm To Join'}</p>
                     <ul>
                         <li>
                             <p className="input-lable">Address</p>
@@ -84,7 +106,7 @@ const JoinModal = (props: Props) => {
                         </li>
                         <li>
                             <p className="input-lable">Amount</p>
-                            <input type="number" placeholder="min:1000" value={input.amount} onChange={(e) => {
+                            <input type="number" placeholder={`${props.cancel ? `max:${props.max}` : 'min:1000'}`} value={input.amount} onChange={(e) => {
                                 setInput({
                                     ...input,
                                     amount: e.target.value
@@ -97,7 +119,7 @@ const JoinModal = (props: Props) => {
                                 props.onClose(0)
                             }}>CLOSE</Button>
                             <Button type="primary" size="large" onClick={() => {
-                                submitJoin()
+                                props.cancel ? submitCancel() : submitJoin()
                             }}>CONFIRM</Button>
                         </li>
                     </ul>

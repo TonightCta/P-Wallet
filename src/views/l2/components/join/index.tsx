@@ -4,7 +4,7 @@ import { PWallet } from './../../../../App';
 import { SignAddress } from '../../../../request/api'
 import { error } from "../../../../utils";
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { useChain } from './../../../../utils/hooks';
+import { useChain, useConnect } from './../../../../utils/hooks';
 import FeedBackModal from "../../../../components/feedback";
 import { Type } from "../../../../utils/type";
 
@@ -28,6 +28,7 @@ const JoinIndex = (): ReactElement<ReactNode> => {
     const [visible, setVisible] = useState<boolean>(false);
     const [pass, setPass] = useState<boolean>(false);
     const { join } = useChain();
+    const { connect } = useConnect();
     const [input, setInput] = useState<Input>({
         ...InputSource,
         from: state.address ? state.address as string : 'Wallet not connected',
@@ -46,6 +47,9 @@ const JoinIndex = (): ReactElement<ReactNode> => {
         }
     }, [])
     const submitJoin = async () => {
+        if (!state.address) {
+            await connect();
+        }
         if (!input.chain_id) {
             error('Please enter chain id');
             return

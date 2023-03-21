@@ -4,6 +4,7 @@ import { StakeInfo } from "../../../../../request/api";
 import { PWallet } from "../../../../../App";
 import { Type } from "../../../../../utils/type";
 
+
 interface Info {
     balance: string,
     total: string,
@@ -21,21 +22,22 @@ const TotalStake = (props: { address: string }): ReactElement => {
         const result: any = await StakeInfo({
             address: props.address
         });
+        const pass: boolean = result.result === 'success';
         setInfo({
-            balance: String(result.total_delegateBalance),
-            total: result.total_rewardBalance,
-            apy: result.dailyrate.replace('%', '')
+            balance: pass ? String(result.total_delegateBalance) : '0',
+            total: pass ? result.total_rewardBalance : '0',
+            apy: pass ? result.dailyrate.replace('%', '') : '0'
         });
         dispatch({
             type: Type.SET_REWARD_TOTAL,
             payload: {
-                reward_total: Number(result.total_rewardBalance.replace('≈',''))
+                reward_total: pass ? Number(result.total_rewardBalance.replace('≈', '')) : 0
             }
         })
     };
     useEffect(() => {
         getInfo()
-    }, [])
+    }, [props.address])
     return (
         <div className="total-stake">
             <ul className="amount-msg">

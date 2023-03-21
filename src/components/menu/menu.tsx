@@ -85,7 +85,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                         <div className='balance-text'>Balance&nbsp;:&nbsp;
                             {
                                 !state.balance_wait
-                                    ? <p>{state.default_chain == '2099156' ? state.account_balance?.main_balance?.toFixed(4) : state.account_balance?.child_balance?.toFixed(4)}</p>
+                                    ? <p>{state.is_dev === 1 ? state.account_balance?.dev_balance : state.default_chain == '2099156' ? state.account_balance?.main_balance?.toFixed(4) : state.account_balance?.child_balance?.toFixed(4)}</p>
                                     : <Spin size="small" />
                             }&nbsp;Pi&nbsp;&nbsp;($&nbsp;{state.default_chain == '2099156' ? state.account_balance?.main_balance_usdt?.toFixed(4) : state.account_balance?.child_balance_usdt?.toFixed(4)})
                         </div>
@@ -105,6 +105,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                             onChange={handleChange}
                             options={[
                                 { value: '2099156', label: 'Plian Mainnet Main' },
+                                // { value: '2099156', label: 'Dev Plian' },
                                 { value: '8007736', label: 'Plian Mainnet Subchain 1' },
                             ]}
                         />

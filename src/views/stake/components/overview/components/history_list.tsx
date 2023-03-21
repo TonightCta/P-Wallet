@@ -84,7 +84,7 @@ const HistoryList = (props: { address: string }): ReactElement => {
     };
     useEffect(() => {
         getHistory()
-    }, [])
+    }, [props.address])
     return (
         <div className="list-data">
             <p className="data-title">Delegation history</p>

@@ -2,7 +2,7 @@ import { Button } from "antd";
 import { ReactElement, ReactNode, useContext, useState } from "react";
 import { DecimalToHex, error } from "../../../../utils";
 import { PWallet } from './../../../../App';
-import { useChain } from './../../../../utils/hooks';
+import { useChain, useConnect } from './../../../../utils/hooks';
 import FeedBackModal from "../../../../components/feedback";
 
 interface Input {
@@ -22,6 +22,7 @@ const EditView = (): ReactElement<ReactNode> => {
     const { set } = useChain();
     const [visible, setVisible] = useState<boolean>(false);
     const [pass, setPass] = useState<boolean>(false);
+    const { connect } = useConnect();
     const [input, setInput] = useState<Input>({
         ...InputSource,
         from: state.address ? state.address as string : 'Wallet not connected',
@@ -29,6 +30,9 @@ const EditView = (): ReactElement<ReactNode> => {
     });
     const [wait, setWait] = useState<boolean>(false);
     const submitSet = async () => {
+        if (!state.address) {
+            await connect();
+        }
         if (!input.chain_id) {
             error('Please enter chain id');
             return
@@ -43,7 +47,7 @@ const EditView = (): ReactElement<ReactNode> => {
             _reward: DecimalToHex(input.amount as number)
         }
         const result = await set(params);
-        setVisible(true)
+        setVisible(true);
         setWait(false);
         setPass(result ? true : false);
         result && setInput({

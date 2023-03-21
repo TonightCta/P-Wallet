@@ -2,9 +2,11 @@ import { ReactElement, useEffect, useState } from "react";
 import { Button, Table, Tooltip } from "antd";
 import type { ColumnsType } from 'antd/es/table';
 import { RewardList } from "../../../../../request/api";
-import { useStake } from "../../../../../utils/hooks";
-import { error, OutSide } from "../../../../../utils";
+import { useStake, useSwitchChain } from "../../../../../utils/hooks";
+import { OutSide } from "../../../../../utils";
 import ModalBox from './../../../../../components/modal/index';
+import JoinModal from "../../overview/components/join_modal";
+
 
 
 interface DataType {
@@ -22,12 +24,23 @@ interface Modal {
     title: string,
     text: string,
 }
-const NoticeList = (props: { address: string, total: number}): ReactElement => {
+interface Append {
+    visible: number,
+    address: string,
+    cancel?: boolean,
+    max?: number
+}
+const NoticeList = (props: { address: string, total: number }): ReactElement => {
     const [modal, setModal] = useState<Modal>({
         visible: 0,
         title: '',
         text: ''
-    })
+    });
+    const [append, setAppend] = useState<Append>({
+        visible: 0,
+        address: ''
+    });
+    const { switchC } = useSwitchChain();
     const columns: ColumnsType<DataType> = [
         {
             title: 'Chain',
@@ -74,13 +87,34 @@ const NoticeList = (props: { address: string, total: number}): ReactElement => {
             dataIndex: 'totalRewardBalance',
             key: 'totalRewardBalance',
         },
-        // {
-        //     title: 'Action',
-        //     key: 'action',
-        //     render: (_, record) => <p>
-        //         <Button size="small" type="primary">CLAIM</Button>
-        //     </p>
-        // }
+        {
+            title: 'Action',
+            key: 'action',
+            render: (_, record) => <p>
+                {
+                    record.tx_status !== '-1' && <Button size="small" type="primary" onClick={async () => {
+                        await switchC(record.chainId === 0 ? 2099156 : 8007736)
+                        setAppend({
+                            visible: 1,
+                            address: record.address
+                        })
+                    }}>APPEND</Button>
+                }
+                {
+                    record.tx_status !== '-1' && <Button size="small" type="primary" onClick={async () => {
+                        await switchC(record.chainId === 0 ? 2099156 : 8007736)
+                        setAppend({
+                            visible: 1,
+                            address: record.address,
+                            max: record.amount,
+                            cancel: true
+                        })
+                    }} className="need-left">CANCEL</Button>
+
+                }
+                <Button size="small" type="primary" className="need-left">DETAIL</Button>
+            </p>
+        }
     ];
     const [wait, setWait] = useState<boolean>(false);
     const { receive } = useStake();
@@ -92,6 +126,9 @@ const NoticeList = (props: { address: string, total: number}): ReactElement => {
         });
         console.log(result);
         setWait(false)
+        if (!result.data) {
+            return
+        }
         const arr = result.data.map((item: any, index: number) => {
             return item = {
                 key: index,
@@ -102,7 +139,7 @@ const NoticeList = (props: { address: string, total: number}): ReactElement => {
     };
     useEffect(() => {
         getNotice();
-    }, []);
+    }, [props.address]);
     //领取奖励
     const receiveReward = async () => {
         if (props.total === 0) {
@@ -134,6 +171,12 @@ const NoticeList = (props: { address: string, total: number}): ReactElement => {
             <ModalBox title={modal.title} visible={modal.visible} close icon text={modal.text} onClose={(val: number) => {
                 setModal({
                     ...modal,
+                    visible: val
+                })
+            }} />
+            <JoinModal visible={append.visible} cancel={append.cancel} max={append.max} address={append.address} onClose={(val: number) => {
+                setAppend({
+                    ...append,
                     visible: val
                 })
             }} />

@@ -5,7 +5,7 @@ import { PointList } from '../../../../../request/api'
 import { error, OutSide } from "../../../../../utils";
 import ModalBox from "../../../../../components/modal";
 import JoinModal from "./join_modal";
-import { useSwitchChain } from "../../../../../utils/hooks";
+import { useConnect, useSwitchChain } from "../../../../../utils/hooks";
 
 interface DataType {
     key: string;
@@ -30,7 +30,8 @@ const JoinList = (props: { address: string }): ReactElement => {
     const [joinMsg, setJoinMsg] = useState<{ visible: number, address: string }>({
         visible: 0,
         address: ''
-    })
+    });
+    const { connect } = useConnect();
     const columns: ColumnsType<DataType> = [
         {
             title: 'Chain',
@@ -39,7 +40,7 @@ const JoinList = (props: { address: string }): ReactElement => {
             render: (text) => <p>
                 {text === 0 ? 'Main Chain' : 'Child Chain 1'}
             </p>,
-            width:146
+            width: 146
         },
         {
             title: 'Elected',
@@ -66,10 +67,10 @@ const JoinList = (props: { address: string }): ReactElement => {
             title: 'Candidate',
             dataIndex: 'address',
             key: 'address',
-            width:150,
-            render: (_,record) => <Tooltip placement="top" title={record.address}>
+            width: 150,
+            render: (_, record) => <Tooltip placement="top" title={record.address}>
                 <p className="clickable" onClick={() => {
-                    OutSide(record.address,record.chainId)
+                    OutSide(record.address, record.chainId)
                 }}>{record.address.substring(0, 6)}...{record.address.substring(record.address.length - 6, record.address.length)}</p>
             </Tooltip>
         },
@@ -83,7 +84,7 @@ const JoinList = (props: { address: string }): ReactElement => {
             title: 'TotalProxiedBalance(PI)',
             dataIndex: 'allProxiedBalance',
             key: 'allProxiedBalance',
-            width:300
+            width: 300
         },
         {
             title: 'Action',
@@ -91,6 +92,9 @@ const JoinList = (props: { address: string }): ReactElement => {
             render: (_, record) => (
                 <p>
                     <Button size="small" type="primary" onClick={async () => {
+                        if (!props.address) {
+                            await connect()
+                        }
                         await switchC(record.chainId === 0 ? 2099156 : 8007736)
                         setJoinMsg({
                             address: record.address,
