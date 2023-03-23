@@ -89,7 +89,7 @@ const HistoryList = (props: { address: string }): ReactElement => {
         <div className="list-data">
             <p className="data-title">Delegation history</p>
             <div className="table-mine">
-                <Table columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 1 }} />
+                <Table scroll={{x:true}} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 1 }} />
             </div>
         </div>
     )

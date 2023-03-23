@@ -78,8 +78,11 @@
         margin-top: 10px;
       }
     }
+    .arrow-box {
+      margin: 14px 0;
+      text-align: center;
+    }
     .to-box {
-      margin-top: 48px;
       p {
         margin-top: 10px;
       }
@@ -168,6 +171,62 @@
         font-weight: bold;
         font-size: 14px;
         color: #ff0000;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1280px) {
+  .wallet-view {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    .swap-content {
+      width: 100%;
+      padding: 0.9rem 2.4em 1.5rem;
+      .tab-box {
+        margin-bottom: 1rem;
+        ul {
+          li {
+            font-size: 0.9rem;
+          }
+        }
+      }
+      .transfer-msg {
+        padding: 0.8rem 1rem;
+        p {
+          font-size: 0.8rem;
+          span {
+            font-size: 0.8rem;
+          }
+        }
+        .inp-amount {
+          margin-top: 1rem;
+          input {
+            height: 2.5rem;
+            font-size: 1rem;
+          }
+        }
+      }
+      .make-transfer {
+        button {
+          font-size: 0.75rem;
+        }
+      }
+    }
+    .transactions-content {
+      padding: 1rem;
+      .table-name {
+        font-size: 1rem;
+      }
+    }
+  }
+  .wait-modal {
+    .oper-btn {
+      .wait-text {
+        span {
+          font-weight: bold;
+          font-size: .8rem;
+          color: #ff0000;
+        }
       }
     }
   }

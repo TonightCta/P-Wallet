@@ -11,9 +11,9 @@ const BridgeView = (): ReactElement<ReactNode> => {
             {/* 交易 */}
             <Swap />
             {/* 记录 */}
-            <KeepAlive>
+            {/* <KeepAlive> */}
                 <Transactions />
-            </KeepAlive>
+            {/* </KeepAlive> */}
         </div>
     )
 };

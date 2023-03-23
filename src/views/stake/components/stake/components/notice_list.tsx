@@ -166,7 +166,7 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
                 }}>Extract Reward</Button>
             </p>
             <div className="table-mine">
-                <Table columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 1 }} />
+                <Table scroll={{x:true}} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 1 }} />
             </div>
             <ModalBox title={modal.title} visible={modal.visible} close icon text={modal.text} onClose={(val: number) => {
                 setModal({

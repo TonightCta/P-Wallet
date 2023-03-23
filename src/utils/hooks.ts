@@ -9,7 +9,6 @@ import { gas, gasPrice } from "./type";
 import { SetWithdrawLog } from "../request/api";
 import { GetBalance } from '../request/api';
 import { DecimalToHex } from ".";
-import { CalendarOutlined } from "@ant-design/icons";
 
 
 interface BResult extends IResponse {
@@ -78,7 +77,7 @@ export const useBalance = () => {
                 address: ethereum.selectedAddress,
                 chainId: 1
             });
-            const devBalance: number = Number(await state.web3.eth.getBalance(state.address)) / 1e18;
+            const devBalance: number = Number(await state.web3.eth.getBalance(ethereum.selectedAddress)) / 1e18;
             console.log(devBalance)
             dispatch({
                 type: Type.SET_IS_DEV,
@@ -122,36 +121,35 @@ export const useCheckChain = () => {
             if (!ethereum) {
                 return
             }
-            if (ethereum.selectedAddress) {
-                const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
-                const isUseChain = chain_id === 2099156 || chain_id === 8007736;
+            const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
+            const isUseChain = chain_id === 2099156 || chain_id === 8007736;
+            dispatch({
+                type: Type.SET_CHECK_CHAIN,
+                payload: {
+                    check_chain: isUseChain ? 1 : 0
+                }
+            });
+            //设置本地默认链
+            const setLocalChainID = () => {
                 dispatch({
-                    type: Type.SET_CHECK_CHAIN,
+                    type: Type.SET_TRNASFER_MSG,
                     payload: {
-                        check_chain: isUseChain ? 1 : 0
+                        transfer_msg: {
+                            from_chain: chain_id === 2099156 ? 'Plian Mainnet Main' : 'Plian Mainnet Subchain 1',
+                            to_chain: chain_id === 2099156 ? 'Plian Mainnet Subchain 1' : 'Plian Mainnet Main',
+                            transfer_type: chain_id === 2099156 ? 0 : 1
+                        }
                     }
-                });
-                //设置本地默认链
-                const setLocalChainID = () => {
-                    dispatch({
-                        type: Type.SET_TRNASFER_MSG,
-                        payload: {
-                            transfer_msg: {
-                                from_chain: chain_id === 2099156 ? 'Plian Mainnet Main' : 'Plian Mainnet Subchain 1',
-                                to_chain: chain_id === 2099156 ? 'Plian Mainnet Subchain 1' : 'Plian Mainnet Main',
-                                transfer_type: chain_id === 2099156 ? 0 : 1
-                            }
-                        }
-                    })
-                    dispatch({
-                        type: Type.SET_DEFAULT_CHAIN,
-                        payload: {
-                            default_chain: String(chain_id)
-                        }
-                    })
-                };
-                isUseChain && setLocalChainID()
-            } else {
+                })
+                dispatch({
+                    type: Type.SET_DEFAULT_CHAIN,
+                    payload: {
+                        default_chain: String(chain_id)
+                    }
+                })
+            };
+            isUseChain && setLocalChainID()
+            if (!ethereum.selectedAddress) {
                 dispatch({
                     type: Type.SET_ADDRESS,
                     payload: {
@@ -315,9 +313,8 @@ export const useSwitchChain = () => {
                         rpcUrls: chain_id ? withChainID[0].rpcUrls : chain_list[0].rpcUrls,
                         blockExplorerUrls: chain_id ? withChainID[0].blockExplorerUrls : chain_list[0].blockExplorerUrls,
                     }
-                ]
+                ];
                 try {
-                    console.log(params)
                     await ethereum.request({
                         method: "wallet_addEthereumChain",
                         params: params,
@@ -333,6 +330,9 @@ export const useSwitchChain = () => {
             }
             switch (error.code) {
                 case 4902:
+                    add();
+                    break;
+                case -32603:
                     add();
                     break;
                 case -32002:

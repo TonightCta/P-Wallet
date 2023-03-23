@@ -93,3 +93,14 @@
     }
   }
 }
+@media screen and (max-width: 1280px) {
+  .join-modal {
+    ul {
+      li:last-child {
+        button {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}

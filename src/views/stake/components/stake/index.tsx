@@ -12,9 +12,9 @@ const Stake = (): ReactElement<ReactNode> => {
     return (
         <div className="stake-inner">
             <TotalStake address={state.address as string}/>
-            <KeepAlive>
+            {/* <KeepAlive> */}
                 <NoticeList total={state.reward_total as number} address={state.address as string}/>
-            </KeepAlive>
+            {/* </KeepAlive> */}
         </div>
     )
 };

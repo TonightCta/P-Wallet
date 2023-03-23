@@ -172,7 +172,7 @@ const Transactions = (): ReactElement<ReactNode> => {
         <div className="transactions-content">
             <p className="table-name">Transactions</p>
             <div className="table-content table-mine">
-                <Table columns={columns} loading={waitResult} pagination={{ pageSize: 10 }} dataSource={data} />
+                <Table columns={columns} scroll={{x:true}} loading={waitResult} pagination={{ pageSize: 10 }} dataSource={data} />
             </div>
         </div>
     )

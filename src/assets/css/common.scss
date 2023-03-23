@@ -1,3 +1,6 @@
-$primaryColor:#E10185;
-$tableB:#1B1F1E;
-$textColor:#888888;
+$primaryColor: #e10185;
+$tableB: #1b1f1e;
+$textColor: #888888;
+@function pxtorem($px) {
+  @return $px * 2 / 75 * 1rem;
+}

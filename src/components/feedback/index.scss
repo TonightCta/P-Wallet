@@ -14,3 +14,12 @@
     margin-top: 30px;
   }
 }
+@media screen and (max-width: 1280px) {
+  .feedback-modal {
+    p:last-child {
+      button{
+        font-size: .8rem;
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ import './index.scss'
 import { useContext } from 'react';
 import { PWallet } from '../App';
 import { Button } from 'antd';
-import ModalBox from '../components/modal';
+import BoxModal from '../components/modal';
 
 const RouterConfig = (): ReactElement => {
     const { monitorAccount, monitorChain } = useWeb3();
@@ -58,9 +58,9 @@ const RouterConfig = (): ReactElement => {
                 </div>
             </div>}
             {/* 浏览器未安装钱包 */}
-            <ModalBox title="Wallet not installed" onClose={(val: number) => {
+            <BoxModal title="Wallet not installed" onClose={(val: number) => {
                 setIsWallet(val)
-            }} type='error' icon visible={isWallet} text='Your browser has not installed the wallet, please refresh and try again after installation.' install></ModalBox>
+            }} type='error' icon visible={isWallet} text='Your browser has not installed the wallet, please refresh and try again after installation.' install></BoxModal>
         </>
 
     )

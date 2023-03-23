@@ -123,7 +123,7 @@ const HistoryView = (props: Props): ReactElement<ReactNode> => {
             <div className="history-content">
                 <p className="table-name">Chain</p>
                 <div className="table-content">
-                    <Table columns={columns} loading={waitResult} pagination={{ pageSize: 10 }} dataSource={data} />
+                    <Table scroll={{x:true}} columns={columns} loading={waitResult} pagination={{ pageSize: 10 }} dataSource={data} />
                 </div>
             </div>
         </div>

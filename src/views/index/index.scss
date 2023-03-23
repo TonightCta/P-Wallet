@@ -31,3 +31,18 @@
   transform: translateX(-15px);
   transition: opacity 0, transform 0;
 }
+
+@media screen and (max-width:1280px) {
+  .index-view{
+    padding-top:3.5rem;
+    .router-view{
+      width: 100%;
+    }
+  }
+  .page-exit-active{
+    position: relative;
+  }
+  .ant-table-cell{
+    white-space: nowrap;
+  }
+}

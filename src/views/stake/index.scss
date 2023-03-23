@@ -7,6 +7,7 @@
     width: 100%;
     background-color: #131615;
     z-index: 100;
+    padding-bottom: 16px;
     ul {
       display: inline-flex;
       width: auto;
@@ -37,5 +38,91 @@
   }
   .stake-content::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .stake-view {
+    margin-top: 1rem;
+    padding: 0 1.5rem;
+    .tab-list {
+      padding-bottom: 1rem;
+      ul{
+        li{
+          font-size: .8rem;
+        }
+      }
+    }
+    .stake-content {
+      height: calc(100vh - 4.8rem);
+      .stake-overview {
+        .overview-data {
+          margin-bottom: 3.75rem;
+          ul {
+            flex-direction: column;
+            li {
+              margin-right: 0;
+              margin-bottom: 1.2rem;
+              .value{
+                p{
+              font-size: 1.1rem;
+                }
+              }
+            }
+            li:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+        .list-data{
+          padding: 1rem;
+          .data-title{
+            font-size: .9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            div{
+              margin-top: .5rem;
+            }
+            .ant-spin{
+              transform: translateY(-2px);
+            }
+          }
+          p{
+            white-space:nowrap
+          }
+        }
+      }
+      .stake-inner{
+        .total-stake{
+          .amount-msg{
+            flex-direction: column;
+            li{
+              width: 100%;
+              margin-bottom: 1rem;
+              p{
+                font-size: 1rem;
+              }
+              .value{
+                p{
+                  font-size: 1.2rem;
+                }
+              }
+            }
+          }
+        }
+        .total-list{
+          .list-name{
+            font-size: .8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            button{
+              margin-top: .8rem;
+            }
+          }
+        }
+      }
+    }
   }
 }

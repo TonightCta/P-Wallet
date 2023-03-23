@@ -12,7 +12,7 @@ const Overview = (): ReactElement<ReactNode> => {
     return (
         <div className="stake-overview">
             <OverviewData default_chain={state.default_chain as string} web3={state.web3}/>
-            <KeepAlive><JoinList address={state.address as string} /></KeepAlive>
+            <JoinList address={state.address as string} />
             <HistoryList address={state.address as string} />
         </div>
     )

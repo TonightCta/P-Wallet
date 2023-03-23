@@ -285,3 +285,87 @@
     }
   }
 }
+@media screen and (max-width: 1280px) {
+  .l2-view {
+    margin-top: 1rem;
+    padding: 0 1.5rem;
+    width: 100%;
+    .tab-list {
+      padding-bottom: 1rem;
+      ul {
+        li {
+          font-size: 0.8rem;
+          width: 5rem;
+        }
+      }
+    }
+    .inner-view {
+      height: calc(100vh - 4.8rem);
+      width: 100%;
+      .history-view {
+        .oper-btn{
+          padding: 1rem 1.5rem 2rem;
+          .oper-name{
+            font-size: 1rem;
+          }
+          p:last-child{
+            margin-top: 1.8rem;
+            display: flex;
+            justify-content: center;
+            button{
+              margin-right: 1.5rem;
+              width: 5rem;
+            }
+            button:last-child{
+              margin-left: 1.5rem;
+              margin-right: 0;
+            }
+          }
+        }
+        .history-content {
+          width: 100%;
+          padding: 1rem;
+          .table-name{
+            font-size: 1rem;
+          }
+        }
+      }
+      .public-content{
+        width: 100%;
+        padding:1rem 1.5rem;
+        .package-title{
+          font-size: 1.2rem;
+        }
+        .public-input{
+          ul{
+            li{
+              .lable{
+                font-size: .9rem;
+              }
+              p{
+                input{
+                  height: 2.4rem;
+                  padding-left: .8rem;
+                  font-size: .8rem;
+                }
+              }
+            }
+            li:last-child{
+              button{
+                font-size: 1rem;
+                height: 2.4rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .confirm-join {
+    p:last-child{
+      button{
+        font-size: .8rem;
+      }
+    }
+  }
+}

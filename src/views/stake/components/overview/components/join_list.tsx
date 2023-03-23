@@ -145,21 +145,21 @@ const JoinList = (props: { address: string }): ReactElement => {
     }, [])
     return (
         <div className="list-data">
-            <div className="data-title">Join Estimated Time(UTC): Main Chain(
+            <div className="data-title">Join Estimated Time(UTC):
                 <div>
-                    {
+                    Main Chain({
                         date.main ? <span>{date.main}</span> : <Spin size="small" />
-                    }
+                    })
                 </div>
-                ) Child Chain 1(
+
                 <div>
-                    {
+                    Child Chain 1({
                         date.child ? <span>{date.child}</span> : <Spin size="small" />
-                    }
+                    })
                 </div>
-                )</div>
+            </div>
             <div className="table-mine">
-                <Table columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 10 }} />
+                <Table scroll={{ x: true }} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 10 }} />
             </div>
             <ModalBox title="Remark" onClose={(val: number) => {
                 setModalMsg({

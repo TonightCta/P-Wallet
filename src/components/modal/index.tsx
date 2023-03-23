@@ -1,5 +1,5 @@
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
-import { Button, Modal } from "antd";
+import { Button,Modal } from "antd";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { error } from "../../utils";
 import './index.scss'
@@ -15,7 +15,7 @@ interface Props {
     onClose: (val: number) => void
 }
 
-const ModalBox = (props: Props): ReactElement<ReactNode> => {
+const BoxModal = (props: Props): ReactElement<ReactNode> => {
     const [visible, setVisible] = useState<boolean>(false);
     useEffect(() => {
         props.visible === 1 && setVisible(true)
@@ -61,4 +61,4 @@ const ModalBox = (props: Props): ReactElement<ReactNode> => {
     )
 };
 
-export default ModalBox;
+export default BoxModal;

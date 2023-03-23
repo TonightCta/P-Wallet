@@ -1,12 +1,12 @@
 import { ReactElement, ReactNode, useContext, useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Select, Spin } from 'antd';
-import { PieChartOutlined } from '@ant-design/icons'
+import { MenuOutlined } from '@ant-design/icons'
 import { useConnect, useSwitchChain } from '../../utils/hooks'
 import './menu.scss'
 import { PWallet } from '../../App';
 import Jazzicon from 'react-jazzicon';
+import MobileMenu from './components/mobile_menu';
 
 interface Route {
     url: string,
@@ -20,6 +20,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
     //当前连接地址
     const { state } = useContext(PWallet);
     const location = useLocation();
+    const [mobildMenu, setMobileMenu] = useState<boolean>(false);
     //当前选择主网
     const { switchC } = useSwitchChain();
     const handleChange = (value: string) => {
@@ -58,8 +59,13 @@ const MenuTab = (): ReactElement<ReactNode> => {
     return (
         <div className='menu-box'>
             <div className='menu-inside'>
+                <div className='mobile-menu' onClick={() => {
+                    setMobileMenu(true)
+                }}>
+                    <MenuOutlined />
+                </div>
                 <div className='logo-menu'>
-                    <div className='logo-box'>
+                    <div className={`logo-box ${!state.address ? 'mobile-need-right' : ''}`}>
                         <img src={require('../../assets/images/logo1.png')} alt="" />
                     </div>
                     <ul>
@@ -113,19 +119,31 @@ const MenuTab = (): ReactElement<ReactNode> => {
                     {/* 连接钱包 */}
                     <div className='connect-btn'>
                         <Button type='primary' onClick={() => {
-                            !state.address && connect()
+                            state.address == null || state.address == 'null' && connect()
                         }}>
-                            {state.address != null && <div className='avatar'>
+                            {state.address == null || state.address == 'null' && <div className='avatar'>
                                 <Jazzicon diameter={18} seed={parseInt(state.address.slice(2, 10), 16)} />
                             </div>}
-                            {state.address == null
+                            {state.address == null || state.address == 'null'
                                 ? 'Connect Wallet'
                                 : `${state.address.substring(0, 6)}...${state.address.substring(state.address.length - 6, state.address.length)}`
                             }
                         </Button>
                     </div>
                 </div>
+                <div className='mobile-avatar' onClick={() => {
+                    setMobileMenu(true)
+                }}>
+                    {
+                        state.address == null || state.address == 'null' ? <Button type='primary' size='small'>Connect</Button>
+                            : <Jazzicon diameter={24} seed={parseInt(state.address.slice(2, 10), 16)} />
+                    }
+                </div>
             </div>
+            {/* 移动端菜单 */}
+            <MobileMenu visible={mobildMenu} onClose={(val: boolean) => {
+                setMobileMenu(val)
+            }} />
         </div>
     )
 };

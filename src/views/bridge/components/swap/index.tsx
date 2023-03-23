@@ -92,6 +92,9 @@ const Swap = (): ReactElement<ReactNode> => {
                 </p>
                 <p>Balance:&nbsp;{state.default_chain == '2099156' ? state.account_balance?.main_balance?.toFixed(4) : state.account_balance?.child_balance?.toFixed(4)}&nbsp;PI</p>
             </div>
+            <div className="arrow-box">
+                <img src={require('../../../../assets/images/down-arrow.png')} alt="" />
+            </div>
             <div className="to-box transfer-msg">
                 <p>To<span>{state.transfer_msg!.to_chain ? state.transfer_msg!.to_chain : 'Wallet not connected'}</span></p>
                 <p>You will receive:&nbsp;{Number(amount).toFixed(4)}&nbsp;PI</p>

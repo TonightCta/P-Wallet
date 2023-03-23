@@ -82,7 +82,7 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
             error('Please enter end block');
             return
         };
-        if (state.account_balance?.main_balance as number < 1e5) {
+        if (state.account_balance?.main_balance as number < 1e5 && state.is_dev === 0) {
             error('Startup cost is not meet the required amount (100000 PI)');
             return
         };

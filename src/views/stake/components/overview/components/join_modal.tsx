@@ -25,7 +25,7 @@ interface Result {
     type: string
 }
 
-const JoinModal = (props: Props) => {
+const JoinModal = (props: Props) : ReactElement => {
     const { state } = useContext(PWallet);
     const [visible, setVisible] = useState<boolean>(false);
     const [result, setResult] = useState<Result>({
