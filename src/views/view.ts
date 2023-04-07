@@ -7,12 +7,12 @@ import L2View from "./l2";
 // import EditView from "./l2/components/edit";
 // import HistoryView from "./l2/components/history";
 export {
-    IndexView,//入口文件
-    TestView,//测试
-    BridgeView,//跨链桥
+    IndexView,//Entry file
+    TestView,//Rest
+    BridgeView,//Cross-chain bridge
     StakeView,
     L2View,
-    // CreatView,//创建链
-    // EditView,//设置区块奖励
-    // HistoryView,//创建历史
+    // CreatView,//Create chain
+    // EditView,//Set block reward
+    // HistoryView,//Create history
 };

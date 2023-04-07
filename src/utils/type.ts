@@ -76,6 +76,6 @@ export interface IResponse {
     message: string
 }
 
-// 跨链gas
+// Cross-chain gas
 export const gas: number = 42000
 export const gasPrice: number = 42000

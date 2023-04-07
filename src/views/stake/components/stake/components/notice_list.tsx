@@ -148,7 +148,7 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
     useEffect(() => {
         getNotice();
     }, [props.address]);
-    //领取奖励
+    //Receive award
     const receiveReward = async () => {
         // if (props.total === 0) {
         //     setModal({

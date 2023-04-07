@@ -130,7 +130,7 @@ const Transactions = (): ReactElement<ReactNode> => {
         },
     ];
     const timer = useRef<any>(null!)
-    //数据列表
+    //Datasheets
     const [data, setData] = useState<DataType[]>([]);
     const [waitResult, setWaitResult] = useState<boolean>(false);
     const queryList = async () => {

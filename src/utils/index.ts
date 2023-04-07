@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { message } from 'antd'
-//日期转换
+//Date conversion
 export const DateConvert = (_time: number): string => {
     const date = new Date(_time * 1000);
     const year = date.getFullYear();
@@ -10,15 +10,15 @@ export const DateConvert = (_time: number): string => {
     const min = date.getMinutes() >= 10 ? date.getMinutes() : '0' + date.getMinutes();
     return `${month}/${day}/${year} ${hour}:${min}`
 };
-//精度计算
+//Accuracy Calculation
 export const DecimalToHex = (_num: number): string => {
     return new BigNumber(_num).toString(16);
 };
-//错误抛出
+//Error thrown
 export const error = (_text: string) => {
     message.error(_text)
 };
-//区块链浏览器查询
+//Blockchain browser query
 export const OutSide = (_key:string,_chain_id:number) => {
     window.open(`https://piscan.plian.org/index.html?key=${_key}&chain=${_chain_id}`)
 }

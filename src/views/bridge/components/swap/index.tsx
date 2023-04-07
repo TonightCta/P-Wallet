@@ -13,7 +13,7 @@ const Swap = (): ReactElement<ReactNode> => {
     const { connect } = useConnect();
     const [selectedChain, setSelectedChain] = useState<number>(Number(state.default_chain));
     const { depositMainChain, withdrawChildChain, check } = useTransfer();
-    //发送交易 - 充值
+    //Send transaction - recharge
     const makeTransfer = async () => {
         if (!state.address) {
             await connect()

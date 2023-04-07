@@ -4,7 +4,6 @@ import { Type } from "../../utils/type";
 import './index.scss';
 import i18n from "../../lang/index";
 import { useTranslation } from "react-i18next";
-import { useTransfer } from "../../utils/hooks";
 
 const TestView = (): ReactElement<ReactNode> => {
     const win:any = window;
@@ -12,7 +11,7 @@ const TestView = (): ReactElement<ReactNode> => {
     const { state,dispatch } = useContext(PWallet);
     const { t } = useTranslation();
     // const { send } = useTransfer();
-    //连接钱包
+    //Connect wallet
     const contect = async () : Promise<void> => {
         try{
             await ethereum.request({ method: 'eth_requestAccounts' })
@@ -20,11 +19,11 @@ const TestView = (): ReactElement<ReactNode> => {
             console.log(error);
         }
     };
-    //检查链接状态
+    //Check link status
     const checkcontect = () => {
-        !ethereum.selectedAddress && alert('未连接钱包')
+        !ethereum.selectedAddress && alert('Wallet not connected')
     }
-    //转账
+    //Transfer
     const testTransfer = () => {
         // send(1,8007736)
     }
@@ -32,7 +31,7 @@ const TestView = (): ReactElement<ReactNode> => {
         <div className="test-view">
             <p>
                 <button onClick={contect}>
-                {/* 连接钱包 */}
+                {/* Connect wallet */}
                 {t('public.connect')}
                 </button>
             </p>

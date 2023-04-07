@@ -4,7 +4,6 @@ import OverviewData from './components/data';
 import JoinList from './components/join_list';
 import HistoryList from './components/history_list';
 import { PWallet } from './../../../../App';
-import KeepAlive from 'react-activation'
 
 
 const Overview = (): ReactElement<ReactNode> => {

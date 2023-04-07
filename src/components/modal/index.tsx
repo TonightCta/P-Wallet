@@ -39,8 +39,8 @@ const BoxModal = (props: Props): ReactElement<ReactNode> => {
                         props.install && <Button type="primary" size="large" onClick={() => {
                             const u = navigator.userAgent;
                             const browser = {
-                                webKit: u.indexOf("AppleWebKit") > -1, //苹果、谷歌内核
-                                gecko: u.indexOf("Gecko") > -1 && u.indexOf("KHTML") == -1, //火狐内核
+                                webKit: u.indexOf("AppleWebKit") > -1, //Apple, Google Kernel
+                                gecko: u.indexOf("Gecko") > -1 && u.indexOf("KHTML") == -1, //Firefox kernel
                             };
                             if (browser.webKit) {
                                 window.open(

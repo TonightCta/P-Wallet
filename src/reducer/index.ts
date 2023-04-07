@@ -12,29 +12,29 @@ const balance_default: string = '{"main_balance":0,"main_balance_usdt":0,"child_
 const transfer_msg_default: string = '{"from_chin":"","to_chain":"","transfer_type":0}'
 
 export const defaultState: State = {
-    web3: web3,//全局web3对象
-    language: localStorage.getItem('language') || 'en',//本地语言
-    address: localStorage.getItem('address') || null,//当前连接地址
-    check_chain: 1,//是否在Plian
-    default_chain: sessionStorage.getItem('default_chain') || '2099156',//默认选择链
-    account_balance: JSON.parse(sessionStorage.getItem('account_balance') || balance_default),//余额
-    balance_wait: false,//余额loading
-    // to_chain:'',//转入链
-    // from_chain:'',//转出链
+    web3: web3,//Global web3 object
+    language: localStorage.getItem('language') || 'en',//Local language
+    address: localStorage.getItem('address') || null,//Current connection address
+    check_chain: 1,//Whether in Plian
+    default_chain: sessionStorage.getItem('default_chain') || '2099156',//Default selection chain
+    account_balance: JSON.parse(sessionStorage.getItem('account_balance') || balance_default),//Balance
+    balance_wait: false,//Balance loading
+    // to_chain:'',//Transfer chain
+    // from_chain:'',//Transfer out chain
     transfer_msg: JSON.parse(sessionStorage.getItem('transfer_msg') || transfer_msg_default),
     waiting: {
         visible: false,
         type: 'wait'
-    },//结果等待窗口
-    transfer_hash: sessionStorage.getItem('transfer_hash') || '',//当前交易hash
-    last_transfer_chain: Number(sessionStorage.getItem('last_transfer_chain')) || 0,//最后一次交易所在链
-    reload_logs: new Date().getTime(),//刷新数据列表标识
+    },//Result waiting window
+    transfer_hash: sessionStorage.getItem('transfer_hash') || '',//Current transaction hash
+    last_transfer_chain: Number(sessionStorage.getItem('last_transfer_chain')) || 0,//Last exchange on chain
+    reload_logs: new Date().getTime(),//Refresh data list ID
     l2_active: Number(sessionStorage.getItem('l2_active')) || 999,
     last_creat: sessionStorage.getItem('last_creat') || '',
     is_wallet: Number(sessionStorage.getItem('is_wallet')) || 1,
-    reward_total: Number(sessionStorage.getItem('reward_total')) || 0,//质押奖励总数
-    is_dev: Number(sessionStorage.getItem('is_dev')) || 0,//是否为开发环境
-    error_message: '',//钱包报错信息
+    reward_total: Number(sessionStorage.getItem('reward_total')) || 0,//Total Staking Rewards
+    is_dev: Number(sessionStorage.getItem('is_dev')) || 0,//Is it a development environment
+    error_message: '',//Wallet error message
 };
 
 export const defaultContext: Context = {

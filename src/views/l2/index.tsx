@@ -6,7 +6,6 @@ import EditView from './components/edit/index';
 import { PWallet } from './../../App';
 import { Type } from "../../utils/type";
 import JoinIndex from './components/join/index';
-import KeepAlive from 'react-activation'
 
 
 interface Tab {

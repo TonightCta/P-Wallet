@@ -3,7 +3,6 @@ import './index.scss'
 import TotalStake from './components/total_stake';
 import NoticeList from './components/notice_list';
 import { PWallet } from './../../../../App';
-import KeepAlive from 'react-activation'
 
 
 

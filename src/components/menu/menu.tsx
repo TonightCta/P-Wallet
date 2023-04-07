@@ -17,11 +17,11 @@ const MenuTab = (): ReactElement<ReactNode> => {
     const navigate = useNavigate();
     // const { t } = useTranslation();
     const { connect } = useConnect();
-    //当前连接地址
+    //Current connection address
     const { state } = useContext(PWallet);
     const location = useLocation();
     const [mobildMenu, setMobileMenu] = useState<boolean>(false);
-    //当前选择主网
+    //Currently selected main network
     const { switchC } = useSwitchChain();
     const handleChange = (value: string) => {
         switchC(Number(value))
@@ -84,7 +84,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                 </div>
                 <div className='connect-wallet-msg'>
                     <div className='tools-box'>
-                        {/* 设置 */}
+                        {/* Set up */}
                         {/* <p className='setting-icon icon-oper'>
                             <SettingOutlined style={{ color: 'white', fontSize: 20 }} />
                         </p> */}
@@ -95,13 +95,13 @@ const MenuTab = (): ReactElement<ReactNode> => {
                                     : <Spin size="small" />
                             }&nbsp;Pi&nbsp;&nbsp;($&nbsp;{state.default_chain == '2099156' ? state.account_balance?.main_balance_usdt?.toFixed(4) : state.account_balance?.child_balance_usdt?.toFixed(4)})
                         </div>
-                        {/* 切换语言 */}
+                        {/* Switch language */}
                         {/* <p className='select-language icon-oper'>
                             <PieChartOutlined style={{ color: 'white', fontSize: 20 }} />
                         </p> */}
                     </div>
 
-                    {/* 选择主网 */}
+                    {/* Choose mainnet */}
                     <div className='select-chain'>
                         <Select
                             size='small'
@@ -116,7 +116,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                             ]}
                         />
                     </div>
-                    {/* 连接钱包 */}
+                    {/* Connect wallet */}
                     <div className='connect-btn'>
                         <Button type='primary' onClick={() => {
                             (state.address == null || state.address == 'null') && connect()
@@ -140,7 +140,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                     }
                 </div>
             </div>
-            {/* 移动端菜单 */}
+            {/* Mobile menu */}
             <MobileMenu visible={mobildMenu} onClose={(val: boolean) => {
                 setMobileMenu(val)
             }} />

@@ -47,7 +47,7 @@ const JoinModal = (props: Props): ReactElement => {
             address: props.address
         })
     }, [props.visible]);
-    //加入质押
+    //Join pledge
     const submitJoin = async () => {
         if (!input.address) {
             error('Please enter address');
@@ -81,7 +81,7 @@ const JoinModal = (props: Props): ReactElement => {
         })
         setVisible(false);
     };
-    // 取消质押
+    // Cancel pledge
     const submitCancel = async () => {
         if (!input.amount) {
             error('Please enter amount');

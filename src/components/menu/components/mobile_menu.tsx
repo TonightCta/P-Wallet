@@ -136,7 +136,7 @@ const MobileMenu = (props: Props): ReactElement<ReactNode> => {
                     </div>
                 </div>
             </Drawer>
-            {/* 选择主网 */}
+            {/* Choose mainnet */}
             <Drawer className="select-chain" size="32%" footer={null} header={false} onClose={() => {
                 setChainDrawer(false)
             }} visible={chainDrawer} placement='bottom'>
