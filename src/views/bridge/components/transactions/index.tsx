@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useEffect, useState, useContext } from "react";
+import { ReactElement, ReactNode, useEffect, useState, useContext, useRef } from "react";
 import { Button, Table, Tooltip } from 'antd';
 import { ColumnsType } from "antd/es/table";
 import { TransactionsLog } from '../../../../request/api';
@@ -63,7 +63,7 @@ const Transactions = (): ReactElement<ReactNode> => {
             title: 'TimeStamp',
             dataIndex: 'date',
             key: 'date',
-            width:180,
+            width: 180,
             render: (_, record) => <p>
                 {DateConvert(Number(record.inner[0].timestamp))}
             </p>
@@ -72,7 +72,7 @@ const Transactions = (): ReactElement<ReactNode> => {
             title: 'From',
             key: 'from',
             dataIndex: 'from',
-            width:250,
+            width: 250,
             render: (_, record) => <Tooltip placement="top" title={record.inner[0].fromAddress}>
                 <p className="clickable" onClick={() => {
                     OutSide(record.inner[0].fromAddress, Number(record.inner[0].chainId))
@@ -111,9 +111,9 @@ const Transactions = (): ReactElement<ReactNode> => {
             key: 'state',
             dataIndex: 'state',
             width: 138,
-            render: (_, record) => <div className={`state-box ${!record.inner[1] ? 'failed-state' : 'pass-state'}`}>
+            render: (_, record) => <div className={`state-box ${record.inner[1] ? record.inner[1].chainId ? 'pass-state' : 'pending-state' : 'failed-state'}`}>
                 <p className="state-point"></p>
-                <p>{!record.inner[1] ? 'failure' : 'complete'}</p>
+                <p>{record.inner[1] ? record.inner[1].chainId ? 'complete' : 'pending' : 'failure'}</p>
             </div>
         },
         {
@@ -121,12 +121,15 @@ const Transactions = (): ReactElement<ReactNode> => {
             width: 120,
             key: 'action',
             render: (_, record) => (
-                !record.inner[1] ? <Button onClick={() => {
-                    resendTransfer(record.inner[0].decodeInput.name, record.inner[0].hash, Number(record.inner[0].value) / 1e18)
-                }} type="primary" size="small">RE&nbsp;SEND</Button> : <Button type="primary" size="small" style={{ opacity: 0 }}>TES</Button>
+                record.inner[1]
+                    ? <Button type="primary" size="small" style={{ opacity: 0 }}>T</Button>
+                    : <Button onClick={() => {
+                        resendTransfer(record.inner[0].decodeInput.name, record.inner[0].hash, Number(record.inner[0].value) / 1e18)
+                    }} type="primary" size="small">RE&nbsp;SEND</Button>
             ),
         },
     ];
+    const timer = useRef<any>(null!)
     //数据列表
     const [data, setData] = useState<DataType[]>([]);
     const [waitResult, setWaitResult] = useState<boolean>(false);
@@ -163,16 +166,26 @@ const Transactions = (): ReactElement<ReactNode> => {
         _type === 'DepositInMainChain' ? takeDepositMain(_hash) : takeWithdrawChild(_amount, _hash)
     };
     useEffect(() => {
+        queryList();
+    }, [])
+    useEffect(() => {
         if (state.address == 'null' || !state.address) {
             return
         };
-        queryList();
-    }, [state.address, state.reload_logs])
+        timer.current = setInterval(() => {
+            queryList();
+            if (!state.transfer_hash) {
+                clearInterval(timer.current)
+            }
+        }, 1000 * 60);
+        return () => clearInterval(timer.current)
+    }, [state.address, state.reload_logs, state.transfer_hash]);
+
     return (
         <div className="transactions-content">
             <p className="table-name">Transactions</p>
             <div className="table-content table-mine">
-                <Table columns={columns} scroll={{x:true}} loading={waitResult} pagination={{ pageSize: 10 }} dataSource={data} />
+                <Table columns={columns} scroll={{ x: true }} loading={waitResult} pagination={{ pageSize: 10 }} dataSource={data} />
             </div>
         </div>
     )

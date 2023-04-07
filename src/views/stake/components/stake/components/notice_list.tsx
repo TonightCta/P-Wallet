@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import { Button, Table, Tooltip } from "antd";
 import type { ColumnsType } from 'antd/es/table';
 import { RewardList } from "../../../../../request/api";
@@ -6,6 +6,7 @@ import { useStake, useSwitchChain } from "../../../../../utils/hooks";
 import { OutSide } from "../../../../../utils";
 import ModalBox from './../../../../../components/modal/index';
 import JoinModal from "../../overview/components/join_modal";
+import { PWallet } from './../../../../../App';
 
 
 
@@ -69,6 +70,9 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
             title: 'Amount(PI)',
             dataIndex: 'amount',
             key: 'amount',
+            render:(text) => <p>
+                {Number(text).toFixed(4)}
+            </p>
         },
         {
             title: 'Tx Status',
@@ -86,6 +90,9 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
             title: 'TotalRewardBalance(PI)',
             dataIndex: 'totalRewardBalance',
             key: 'totalRewardBalance',
+            render:(text) => <p>
+                {Number(text).toFixed(4)}
+            </p>
         },
         {
             title: 'Action',
@@ -112,7 +119,9 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
                     }} className="need-left">CANCEL</Button>
 
                 }
-                <Button size="small" type="primary" className="need-left">DETAIL</Button>
+                <Button size="small" type="primary" className="need-left" onClick={() => {
+                    OutSide(record.address,Number(record.chainId))
+                }}>DETAIL</Button>
             </p>
         }
     ];
@@ -124,7 +133,6 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
         const result = await RewardList({
             address: props.address
         });
-        console.log(result);
         setWait(false)
         if (!result.data) {
             return
@@ -142,20 +150,23 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
     }, [props.address]);
     //领取奖励
     const receiveReward = async () => {
-        if (props.total === 0) {
+        // if (props.total === 0) {
+        //     setModal({
+        //         visible: 1,
+        //         title: 'Failure',
+        //         text: 'The current reward balance that can be claimed is 0.'
+        //     })
+        //     return
+        // }
+        const result = await receive();
+        const _error : string = sessionStorage.getItem('error_message') || '';
+        setTimeout(() => {
             setModal({
                 visible: 1,
-                title: 'Failure',
-                text: 'The current reward balance that can be claimed is 0.'
-            })
-            return
-        }
-        const result = await receive();
-        result && setModal({
-            visible: 1,
-            title: 'Already Submitted',
-            text: 'Your application has been submitted, please wait for block confirmation.'
-        });
+                title: result ? 'Already Submitted' : 'Extraction Failed',
+                text: result ? 'Your application has been submitted, please wait for block confirmation.' : _error
+            });
+        })
     };
     return (
         <div className="total-list">
@@ -166,7 +177,7 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
                 }}>Extract Reward</Button>
             </p>
             <div className="table-mine">
-                <Table scroll={{x:true}} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 1 }} />
+                <Table scroll={{ x: true }} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 10 }} />
             </div>
             <ModalBox title={modal.title} visible={modal.visible} close icon text={modal.text} onClose={(val: number) => {
                 setModal({
@@ -174,7 +185,7 @@ const NoticeList = (props: { address: string, total: number }): ReactElement => 
                     visible: val
                 })
             }} />
-            <JoinModal visible={append.visible} cancel={append.cancel} max={append.max} address={append.address} onClose={(val: number) => {
+            <JoinModal address_read visible={append.visible} cancel={append.cancel} max={append.max} address={append.address} onClose={(val: number) => {
                 setAppend({
                     ...append,
                     visible: val

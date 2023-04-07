@@ -23,6 +23,10 @@
         cursor: pointer;
         transition: 0.3s all;
       }
+      li:last-child {
+        width: auto;
+        padding: 0 16px;
+      }
       .active-tab {
         background-color: $primaryColor;
         color: white;
@@ -297,26 +301,32 @@
           font-size: 0.8rem;
           width: 5rem;
         }
+        li:last-child {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          padding: 0 0.3rem;
+        }
       }
     }
     .inner-view {
       height: calc(100vh - 4.8rem);
       width: 100%;
       .history-view {
-        .oper-btn{
+        .oper-btn {
           padding: 1rem 1.5rem 2rem;
-          .oper-name{
+          .oper-name {
             font-size: 1rem;
           }
-          p:last-child{
+          p:last-child {
             margin-top: 1.8rem;
             display: flex;
             justify-content: center;
-            button{
+            button {
               margin-right: 1.5rem;
               width: 5rem;
             }
-            button:last-child{
+            button:last-child {
               margin-left: 1.5rem;
               margin-right: 0;
             }
@@ -325,33 +335,33 @@
         .history-content {
           width: 100%;
           padding: 1rem;
-          .table-name{
+          .table-name {
             font-size: 1rem;
           }
         }
       }
-      .public-content{
+      .public-content {
         width: 100%;
-        padding:1rem 1.5rem;
-        .package-title{
+        padding: 1rem 1.5rem;
+        .package-title {
           font-size: 1.2rem;
         }
-        .public-input{
-          ul{
-            li{
-              .lable{
-                font-size: .9rem;
+        .public-input {
+          ul {
+            li {
+              .lable {
+                font-size: 0.9rem;
               }
-              p{
-                input{
+              p {
+                input {
                   height: 2.4rem;
-                  padding-left: .8rem;
-                  font-size: .8rem;
+                  padding-left: 0.8rem;
+                  font-size: 0.8rem;
                 }
               }
             }
-            li:last-child{
-              button{
+            li:last-child {
+              button {
                 font-size: 1rem;
                 height: 2.4rem;
               }
@@ -362,9 +372,9 @@
     }
   }
   .confirm-join {
-    p:last-child{
-      button{
-        font-size: .8rem;
+    p:last-child {
+      button {
+        font-size: 0.8rem;
       }
     }
   }

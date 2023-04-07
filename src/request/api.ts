@@ -13,7 +13,7 @@ export const SetWithdrawLog = (p: o) => post('/getChildTxInMainChain', p);
 //获取余额
 export const GetBalance = (p: o) => post('/getBalance', p);
 //获取签名
-export const SignAddress = (p: o) => post('/signAddress', p);
+export const SignAddress = (p: o) => post('', p);
 //质押节点列表
 export const PointList = (p: o) => post('/queryCandidateList', p); //address
 //质押历史列表
@@ -26,3 +26,5 @@ export const RewardList = (p: o) => post('/getDelegateRewardList', p);
 export const BlockInfo = (p: o) => post('/getMonitorLastBlock', p);
 //纪元信息
 export const EpochInfo = (p: o) => post('/getMonitorEpochInfo', p);
+//记录转账信息
+export const RecordHash = (p:o) => post('/addCrossTransferHistory',p);

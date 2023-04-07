@@ -119,12 +119,12 @@ const MenuTab = (): ReactElement<ReactNode> => {
                     {/* 连接钱包 */}
                     <div className='connect-btn'>
                         <Button type='primary' onClick={() => {
-                            state.address == null || state.address == 'null' && connect()
+                            (state.address == null || state.address == 'null') && connect()
                         }}>
-                            {state.address == null || state.address == 'null' && <div className='avatar'>
+                            {state.address != null && <div className='avatar'>
                                 <Jazzicon diameter={18} seed={parseInt(state.address.slice(2, 10), 16)} />
                             </div>}
-                            {state.address == null || state.address == 'null'
+                            {(state.address == null || state.address == 'null')
                                 ? 'Connect Wallet'
                                 : `${state.address.substring(0, 6)}...${state.address.substring(state.address.length - 6, state.address.length)}`
                             }
@@ -135,7 +135,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                     setMobileMenu(true)
                 }}>
                     {
-                        state.address == null || state.address == 'null' ? <Button type='primary' size='small'>Connect</Button>
+                        (state.address == null || state.address == 'null') ? <Button type='primary' size='small'>Connect</Button>
                             : <Jazzicon diameter={24} seed={parseInt(state.address.slice(2, 10), 16)} />
                     }
                 </div>

@@ -33,23 +33,25 @@ const EditView = (): ReactElement<ReactNode> => {
         if (!state.address) {
             await connect();
         }
-        if (!input.chain_id) {
-            error('Please enter chain id');
-            return
-        };
+        // if (!input.chain_id) {
+        //     error('Please enter chain id');
+        //     return
+        // };
         if (!input.amount) {
             error('Please enter reward amount');
             return
         };
         setWait(true)
         const params = {
-            _chain_id: input.chain_id,
-            _reward: DecimalToHex(input.amount as number)
+            _chain_id: state.web3.utils.numberToHex(state.default_chain),
+            _reward: '0x' + DecimalToHex(input.amount as number)
         }
         const result = await set(params);
-        setVisible(true);
         setWait(false);
-        setPass(result ? true : false);
+        setTimeout(() => {
+            setVisible(true);
+            setPass(result ? true : false);
+        })
         result && setInput({
             ...InputSource,
             from: state.address as string
@@ -66,7 +68,7 @@ const EditView = (): ReactElement<ReactNode> => {
                             <input type="text" value={input.from} readOnly placeholder="Address" />
                         </p>
                     </li>
-                    <li>
+                    {/* <li>
                         <p className="lable">Chain ID</p>
                         <p>
                             <input type="text" value={input.chain_id} onChange={(e) => {
@@ -76,7 +78,7 @@ const EditView = (): ReactElement<ReactNode> => {
                                 })
                             }} placeholder="Chain ID" />
                         </p>
-                    </li>
+                    </li> */}
                     <li>
                         <p className="lable">Reward Amount(PI)</p>
                         <p>
@@ -96,7 +98,7 @@ const EditView = (): ReactElement<ReactNode> => {
                     </li>
                 </ul>
             </div>
-            <FeedBackModal title={`Set ${pass ? 'Success' : 'Failed'}`} visible={visible} pass={pass} retry={() => {
+            <FeedBackModal title={`Set ${pass ? 'Success' : 'Failed'}`} text={pass ? 'already submitted' : sessionStorage.getItem('error_message') || ''} visible={visible} pass={pass} retry={() => {
                 submitSet()
             }} />
         </div>

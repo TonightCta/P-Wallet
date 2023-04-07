@@ -11,31 +11,31 @@ export interface Community {
 export const com: Community[] = [
     {
         img: require('../../assets/images/github.png'),
-        url: 'https://www.baidu.com',
+        url: 'https://pizzap.gitbook.io/pizzap/',
         width: 24,
         height: 24
     },
     {
         img: require('../../assets/images/telegram.png'),
-        url: 'https://www.baidu.com',
+        url: 'https://t.me/pizzap_io',
         width: 24,
         height: 20,
     },
     {
         img: require('../../assets/images/twitter.png'),
-        url: 'https://www.baidu.com',
+        url: 'https://twitter.com/pizzap_io',
         width: 30,
         height: 24
     },
     {
         img: require('../../assets/images/medium.png'),
-        url: 'https://www.baidu.com',
+        url: 'https://plian-org.medium.com/',
         width: 24,
         height: 24,
     },
     {
         img: require('../../assets/images/reddit.png'),
-        url: 'https://www.baidu.com',
+        url: 'https://www.reddit.com/user/pchain_org?rdt=50789',
         width: 28,
         height: 24
     },

@@ -82,7 +82,9 @@ const HistoryView = (props: Props): ReactElement<ReactNode> => {
                         })
 
                     }}>JOIN</Button>
-                    <Button size="small" type="primary">DETAIL</Button>
+                    <Button size="small" type="primary" onClick={() => {
+                        OutSide(record.hash, Number(record.chainId))
+                    }}>DETAIL</Button>
                 </p>
             )
         }

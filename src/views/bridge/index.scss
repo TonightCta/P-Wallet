@@ -140,6 +140,11 @@
           background-color: #00c800;
         }
       }
+      .pending-state{
+        .state-point{
+          background-color: yellow;
+        }
+      }
       .amount-oper {
         color: #1ab1e3;
       }

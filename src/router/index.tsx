@@ -16,7 +16,9 @@ const RouterConfig = (): ReactElement => {
     const { state } = useContext(PWallet);
     const [isWallet, setIsWallet] = useState<number>(0);
     useEffect(() => {
-        checkWallet();
+        setTimeout(() => {
+            checkWallet();
+        }, 200)
         return () => {
             checkWallet()
         }

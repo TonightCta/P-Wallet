@@ -1,11 +1,12 @@
 import { Button, Spin, Table, Tooltip } from "antd";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import type { ColumnsType } from 'antd/es/table';
 import { PointList } from '../../../../../request/api'
 import { error, OutSide } from "../../../../../utils";
 import ModalBox from "../../../../../components/modal";
 import JoinModal from "./join_modal";
 import { useConnect, useSwitchChain } from "../../../../../utils/hooks";
+import { PWallet } from './../../../../../App';
 
 interface DataType {
     key: string;
@@ -20,6 +21,7 @@ interface DataType {
 
 const JoinList = (props: { address: string }): ReactElement => {
     const [wait, setWait] = useState<boolean>(false);
+    const { state } = useContext(PWallet)
     const { switchC } = useSwitchChain();
     //DETAIL
     const [modalMsg, setModalMsg] = useState<{ visible: number, text: string }>({
@@ -27,9 +29,10 @@ const JoinList = (props: { address: string }): ReactElement => {
         text: ''
     });
     //JOIN
-    const [joinMsg, setJoinMsg] = useState<{ visible: number, address: string }>({
+    const [joinMsg, setJoinMsg] = useState<{ visible: number, address?: string, address_read: boolean }>({
         visible: 0,
-        address: ''
+        address: '',
+        address_read: true
     });
     const { connect } = useConnect();
     const columns: ColumnsType<DataType> = [
@@ -84,7 +87,10 @@ const JoinList = (props: { address: string }): ReactElement => {
             title: 'TotalProxiedBalance(PI)',
             dataIndex: 'allProxiedBalance',
             key: 'allProxiedBalance',
-            width: 300
+            width: 300,
+            render:(text) => <p>
+                {Number(text).toFixed(4)}
+            </p>
         },
         {
             title: 'Action',
@@ -98,9 +104,10 @@ const JoinList = (props: { address: string }): ReactElement => {
                         await switchC(record.chainId === 0 ? 2099156 : 8007736)
                         setJoinMsg({
                             address: record.address,
-                            visible: 1
+                            visible: 1,
+                            address_read: true
                         })
-                    }}>JOIN</Button>
+                    }}>STAKE</Button>
                     <Button size="small" type="primary" onClick={() => {
                         setModalMsg({
                             visible: 1,
@@ -121,7 +128,8 @@ const JoinList = (props: { address: string }): ReactElement => {
         const result: any = await PointList({
             address: props.address,
             pageNo: 1,
-            pageSize: 100
+            pageSize: 100,
+            chainId: state.default_chain === '2099156' ? 0 : 1
         });
         setWait(false)
         if (result.result !== 'success') {
@@ -142,21 +150,30 @@ const JoinList = (props: { address: string }): ReactElement => {
     };
     useEffect(() => {
         getList()
-    }, [])
+    }, [state.default_chain])
     return (
         <div className="list-data">
-            <div className="data-title">Join Estimated Time(UTC):
-                <div>
-                    Main Chain({
-                        date.main ? <span>{date.main}</span> : <Spin size="small" />
-                    })
-                </div>
+            <div className="data-title">
+                <div className="title-box">
+                    Join Estimated Time(UTC):
+                    <div>
+                        Main Chain({
+                            date.main ? <span>{date.main}</span> : <Spin size="small" />
+                        })
+                    </div>
 
-                <div>
-                    Child Chain 1({
-                        date.child ? <span>{date.child}</span> : <Spin size="small" />
-                    })
+                    <div>
+                        Child Chain 1({
+                            date.child ? <span>{date.child}</span> : <Spin size="small" />
+                        })
+                    </div>
                 </div>
+                <Button type="primary" size="small" onClick={() => {
+                    setJoinMsg({
+                        visible: 1,
+                        address_read: false
+                    })
+                }}>Custom Stake</Button>
             </div>
             <div className="table-mine">
                 <Table scroll={{ x: true }} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 10 }} />
@@ -167,10 +184,10 @@ const JoinList = (props: { address: string }): ReactElement => {
                     visible: val
                 })
             }} close visible={modalMsg.visible} text={modalMsg.text} />
-            <JoinModal visible={joinMsg.visible} address={joinMsg.address} onClose={(val: number) => {
+            <JoinModal address_read={joinMsg.address_read} visible={joinMsg.visible} address={joinMsg.address || ''} onClose={(val: number) => {
                 setJoinMsg({
                     ...joinMsg,
-                    visible: 0
+                    visible: val
                 })
             }} />
         </div>

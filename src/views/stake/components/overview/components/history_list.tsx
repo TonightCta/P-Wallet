@@ -8,6 +8,7 @@ interface DataType {
     key: string;
     chainId: string;
     number: number;
+    address:string,
     updatetime: string;
     candidate: string;
     amount: number,
@@ -33,7 +34,7 @@ const HistoryList = (props: { address: string }): ReactElement => {
             title: 'Time',
             dataIndex: 'updatetime',
             key: 'updatetime',
-            width: 160
+            width: 200
         },
         {
             title: 'Candidate',
@@ -50,6 +51,9 @@ const HistoryList = (props: { address: string }): ReactElement => {
             title: 'Amount(PI)',
             dataIndex: 'amount',
             key: 'amount',
+            render:(text) => <p>
+                {Number(text).toFixed(4)}
+            </p>
         },
         {
             title: 'Operation Type',
@@ -63,7 +67,9 @@ const HistoryList = (props: { address: string }): ReactElement => {
             title: 'Action',
             key: 'action',
             render: (_, record) => <p>
-                <Button type="primary" size="small">DETAIL</Button>
+                <Button type="primary" size="small" onClick={() => {
+                    OutSide(record.address ? record.address : record.candidate,Number(record.chainId))
+                }}>DETAIL</Button>
             </p>
         }
     ];
@@ -72,7 +78,6 @@ const HistoryList = (props: { address: string }): ReactElement => {
     const getHistory = async () => {
         setWait(true)
         const result = await StakeHistory({ address: props.address });
-        console.log(result);
         setWait(false)
         const arr = result.data.map((item: any, index: number) => {
             return item = {
@@ -89,7 +94,7 @@ const HistoryList = (props: { address: string }): ReactElement => {
         <div className="list-data">
             <p className="data-title">Delegation history</p>
             <div className="table-mine">
-                <Table scroll={{x:true}} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 1 }} />
+                <Table scroll={{x:true}} columns={columns} loading={wait} dataSource={data} pagination={{ pageSize: 10 }} />
             </div>
         </div>
     )

@@ -22,11 +22,11 @@ const Swap = (): ReactElement<ReactNode> => {
             message.error('Please enter the amount');
             return
         };
-        if (selectedChain === 2099156 && amount > (state.account_balance?.main_balance as number)) {
+        if (selectedChain === 2099156 && amount > Number(state.account_balance?.main_balance)) {
             message.error(`Your available balance is ${state.account_balance?.main_balance} PI`);
             return
         }
-        if (selectedChain === 8007736 && amount > (state.account_balance?.child_balance as number)) {
+        if (selectedChain === 8007736 && amount > Number(state.account_balance?.child_balance)) {
             message.error(`Your available balance is ${state.account_balance?.child_balance} PI`);
             return
         }
@@ -36,15 +36,15 @@ const Swap = (): ReactElement<ReactNode> => {
     };
     useEffect(() => {
         if (state.transfer_hash) {
-            dispatch({
-                type: Type.SET_WAITING,
-                payload: {
-                    waiting: {
-                        type: 'wait',
-                        visible: true
-                    }
-                }
-            });
+            // dispatch({
+            //     type: Type.SET_WAITING,
+            //     payload: {
+            //         waiting: {
+            //             type: 'wait',
+            //             visible: true
+            //         }
+            //     }
+            // });
             state.transfer_hash !== '1' && check()
         }
     }, [])

@@ -16,7 +16,7 @@ export const defaultState: State = {
     language: localStorage.getItem('language') || 'en',//本地语言
     address: localStorage.getItem('address') || null,//当前连接地址
     check_chain: 1,//是否在Plian
-    default_chain: '2099156',//默认选择链
+    default_chain: sessionStorage.getItem('default_chain') || '2099156',//默认选择链
     account_balance: JSON.parse(sessionStorage.getItem('account_balance') || balance_default),//余额
     balance_wait: false,//余额loading
     // to_chain:'',//转入链
@@ -25,15 +25,16 @@ export const defaultState: State = {
     waiting: {
         visible: false,
         type: 'wait'
-    },
-    transfer_hash: sessionStorage.getItem('transfer_hash') || '',
-    last_transfer_chain: Number(sessionStorage.getItem('last_transfer_chain')) || 0,
-    reload_logs: new Date().getTime(),
+    },//结果等待窗口
+    transfer_hash: sessionStorage.getItem('transfer_hash') || '',//当前交易hash
+    last_transfer_chain: Number(sessionStorage.getItem('last_transfer_chain')) || 0,//最后一次交易所在链
+    reload_logs: new Date().getTime(),//刷新数据列表标识
     l2_active: Number(sessionStorage.getItem('l2_active')) || 999,
     last_creat: sessionStorage.getItem('last_creat') || '',
     is_wallet: Number(sessionStorage.getItem('is_wallet')) || 1,
-    reward_total: Number(sessionStorage.getItem('reward_total')) || 0,
-    is_dev: Number(sessionStorage.getItem('is_dev')) || 0
+    reward_total: Number(sessionStorage.getItem('reward_total')) || 0,//质押奖励总数
+    is_dev: Number(sessionStorage.getItem('is_dev')) || 0,//是否为开发环境
+    error_message: '',//钱包报错信息
 };
 
 export const defaultContext: Context = {
@@ -57,6 +58,7 @@ export const initState = (state: State, action: IAction) => {
         case Type.SET_CHECK_CHAIN:
             return { ...state, check_chain: payload.check_chain };
         case Type.SET_DEFAULT_CHAIN:
+            sessionStorage.setItem('default_chain', payload.default_chain as string);
             return { ...state, default_chain: payload.default_chain }
         case Type.SET_BALANCE:
             sessionStorage.setItem('account_balance', JSON.stringify(payload.account_balance))
@@ -95,6 +97,8 @@ export const initState = (state: State, action: IAction) => {
         case Type.SET_IS_DEV:
             sessionStorage.setItem('is_dev', String(payload.is_dev));
             return { ...state, is_dev: payload.is_dev }
+        case Type.SET_ERROR_MESSAGE:
+            return { ...state, error_message: payload.error_message }
         default:
             return state;
     }

@@ -7,10 +7,11 @@ import ModalBox from './../../../../../components/modal/index';
 
 interface Props {
     address: string,
+    address_read: boolean
     visible: number,
     cancel?: boolean,
     onClose: (val: number) => void,
-    max?: number
+    max?: number,
 }
 
 interface Input {
@@ -25,7 +26,7 @@ interface Result {
     type: string
 }
 
-const JoinModal = (props: Props) : ReactElement => {
+const JoinModal = (props: Props): ReactElement => {
     const { state } = useContext(PWallet);
     const [visible, setVisible] = useState<boolean>(false);
     const [result, setResult] = useState<Result>({
@@ -36,14 +37,22 @@ const JoinModal = (props: Props) : ReactElement => {
     })
     const { join, cancel } = useStake();
     const [input, setInput] = useState<Input>({
-        address: props.address,
+        address: '',
         amount: '',
     });
     useEffect(() => {
-        props.visible === 1 && setVisible(true)
+        props.visible === 1 && setVisible(true);
+        props.visible === 1 && setInput({
+            ...input,
+            address: props.address
+        })
     }, [props.visible]);
     //加入质押
     const submitJoin = async () => {
+        if (!input.address) {
+            error('Please enter address');
+            return
+        }
         if (!input.amount) {
             error('Please enter amount');
             return
@@ -52,7 +61,7 @@ const JoinModal = (props: Props) : ReactElement => {
             error('Delegation amount must be greater or equal to 1000 PI');
             return
         }
-        if (state.default_chain === '2099156' && state.account_balance?.main_balance as number < 1000) {
+        if (state.default_chain === '2099156' && state.account_balance?.main_balance as number < 1000 && state.is_dev === 0) {
             error('Your PI balance is insufficient.');
             return
         }
@@ -60,13 +69,16 @@ const JoinModal = (props: Props) : ReactElement => {
             error('Your PI balance is insufficient.');
             return
         };
-        const result = await join(props.address, input.amount as number);
-        setResult({
-            visible: 1,
-            title: result ? 'Already Submitted' : 'Failed To Join',
-            type: result ? 'success' : 'error',
-            text: result ? 'Your application has been submitted, please wait for block confirmation' : 'Block exception, please try again later'
-        });
+        const result = await join(input.address, input.amount as number);
+        const _error : string = sessionStorage.getItem('error_message') || '';
+        setTimeout(() => {
+            setResult({
+                visible: 1,
+                title: result ? 'Already Submitted' : 'Failed To Stake',
+                type: result ? 'success' : 'error',
+                text: result ? 'Your application has been submitted, please wait for block confirmation' : _error
+            });
+        })
         setVisible(false);
     };
     // 取消质押
@@ -80,18 +92,20 @@ const JoinModal = (props: Props) : ReactElement => {
             return
         };
         const result = await cancel(props.address, input.amount as number);
+        const _error : string = sessionStorage.getItem('error_message') || '';
         setResult({
             visible: 1,
             title: result ? 'Already Submitted' : 'Failed To Cancel',
             type: result ? 'success' : 'error',
-            text: result ? 'Your application has been submitted, please wait for block confirmation' : 'Block exception, please try again later'
+            text: result ? 'Your application has been submitted, please wait for block confirmation' : _error
         });
         setVisible(false);
     }
     useEffect(() => {
         !visible && setInput({
             ...input,
-            amount: ''
+            amount: '',
+            address: ''
         })
     }, [visible])
     return (
@@ -102,7 +116,12 @@ const JoinModal = (props: Props) : ReactElement => {
                     <ul>
                         <li>
                             <p className="input-lable">Address</p>
-                            <input type="text" readOnly value={props.address} />
+                            <input type="text" placeholder="address" readOnly={props.address_read} value={input.address} onChange={(e) => {
+                                setInput({
+                                    ...input,
+                                    address: e.target.value
+                                })
+                            }} />
                         </li>
                         <li>
                             <p className="input-lable">Amount</p>
@@ -130,6 +149,7 @@ const JoinModal = (props: Props) : ReactElement => {
                     ...result,
                     visible: val
                 })
+                props.onClose(0)
             }} />
         </div>
     )

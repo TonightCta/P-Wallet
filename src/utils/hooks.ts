@@ -6,9 +6,10 @@ import TransferABI from './abi/transfer_abi.json';
 import ChainABI from './abi/chain_abi.json'
 import StakeABI from './abi/stake.json'
 import { gas, gasPrice } from "./type";
-import { SetWithdrawLog } from "../request/api";
+import { SetWithdrawLog, RecordHash } from "../request/api";
 import { GetBalance } from '../request/api';
 import { DecimalToHex } from ".";
+
 
 
 interface BResult extends IResponse {
@@ -78,7 +79,6 @@ export const useBalance = () => {
                 chainId: 1
             });
             const devBalance: number = Number(await state.web3.eth.getBalance(ethereum.selectedAddress)) / 1e18;
-            console.log(devBalance)
             dispatch({
                 type: Type.SET_IS_DEV,
                 payload: {
@@ -377,7 +377,11 @@ export const useTransfer = () => {
                 transfer_hash: _hash
             }
         })
-    }
+    };
+    //第一步确认hash
+    let _first_hash: string;
+    //第二步确认hash
+    let _second_hash: string;
     //主链充值 - 转出
     const depositMainChain = async (amount: number) => {
         updateWait('wait', true)
@@ -391,7 +395,8 @@ export const useTransfer = () => {
         updateHash('1')
         contract.methods.DepositInMainChain('child_0').send(params).then(async (result: any) => {
             if (result['transactionHash']) {
-                updateHash(result['transactionHash'])
+                updateHash(result['transactionHash']);
+                _first_hash = result['transactionHash'];
                 const wait = await switchC(8007736);
                 dispatch({
                     type: Type.SET_LAST_TRANSFER_CHAIN,
@@ -413,20 +418,32 @@ export const useTransfer = () => {
     //主链充值 - 接收
     const takeDepositMain = async (hash: string) => {
         updateWait('wait', true)
-        let _local_hash: string;
         const params = {
             from: state.address,
             chainId: 'child_0',
             gas: gas,
             gasPrice: '0'
         };
-        updateHash('1')
-        contract.methods.DepositInChildChain('child_0', hash).send(params).on('transactionHash', (_hash: string) => {
+        updateHash('1');
+        contract.methods.DepositInChildChain('child_0', hash).send(params).on('transactionHash', async (_hash: string) => {
             updateHash(_hash)
-            _local_hash = _hash;
+            _second_hash = _hash;
+            await RecordHash({
+                address: state.address,
+                fromChainId: 0,
+                toChainId: 1,
+                firstHash: _first_hash,
+                secondHash: _second_hash
+            });
+            updateWait('success', true);
+            dispatch({
+                type: Type.SET_RELOAD_LOGS,
+                payload: {
+                    reload_logs: new Date().getTime()
+                }
+            })
         }).on('receipt', (response: unknown) => {
             updateHash('')
-            updateWait('success', true)
             inquire();
             dispatch({
                 type: Type.SET_RELOAD_LOGS,
@@ -437,7 +454,7 @@ export const useTransfer = () => {
         }).on('error', (error: any) => {
             if (error.message.indexOf('50 blocks') > -1) {
                 // setShowSuccess(true)
-                checkTransfer(_local_hash)
+                checkTransfer(_second_hash)
             } else {
                 updateHash('')
                 updateWait('error', true)
@@ -463,7 +480,8 @@ export const useTransfer = () => {
         updateHash('1')
         contract.methods.WithdrawFromChildChain('child_0').send(params).then(async (result: any) => {
             if (result['transactionHash']) {
-                updateHash(result['transactionHash'])
+                updateHash(result['transactionHash']);
+                _first_hash = result['transactionHash'];
                 const timer = setInterval(async () => {
                     const service: any = await SetWithdrawLog({
                         txHash: result['transactionHash'],
@@ -493,7 +511,6 @@ export const useTransfer = () => {
     };
     //子链提现 - 接收
     const takeWithdrawChild = async (amount: number, hash: string) => {
-        let _local_hash: string;
         updateWait('wait', true)
         const params = {
             from: state.address,
@@ -502,23 +519,37 @@ export const useTransfer = () => {
             gasPrice: '0'
         };
         updateHash('1')
-        contract.methods.WithdrawFromMainChain('child_0', state.web3.utils.toWei(String(amount)), hash).send(params).on('transactionHash', (_hash: string) => {
+        contract.methods.WithdrawFromMainChain('child_0', state.web3.utils.toWei(String(amount)), hash).send(params).on('transactionHash', async (_hash: string) => {
             updateHash(_hash)
-            _local_hash = _hash;
-        }).on('receipt', (response: unknown) => {
-            updateHash('')
-            updateWait('success', true)
-            inquire();
+            _second_hash = _hash;
+            await RecordHash({
+                address: state.address,
+                fromChainId: 1,
+                toChainId: 0,
+                firstHash: _first_hash,
+                secondHash: _second_hash
+            });
+            updateWait('success', true);
             dispatch({
                 type: Type.SET_RELOAD_LOGS,
                 payload: {
                     reload_logs: new Date().getTime()
                 }
             })
+        }).on('receipt', (response: unknown) => {
+            updateHash('')
+            // updateWait('success', true)
+            inquire();
+            dispatch({
+                type: Type.SET_RELOAD_LOGS,
+                payload: {
+                    reload_logs: new Date().getTime()
+                }
+            });
         }).on('error', (error: any) => {
             if (error.message.indexOf('50 blocks') > -1) {
                 // setShowSuccess(true)
-                checkTransfer(_local_hash)
+                checkTransfer(_second_hash)
             } else {
                 updateWait('error', true);
                 updateHash('')
@@ -536,7 +567,7 @@ export const useTransfer = () => {
             if (result && result.status) {
                 clearInterval(timer);
                 updateHash('')
-                updateWait('success', true);
+                // updateWait('success', true);
                 dispatch({
                     type: Type.SET_RELOAD_LOGS,
                     payload: {
@@ -563,30 +594,58 @@ export const useTransfer = () => {
 
 //链操作
 export const useChain = () => {
-    const { state } = useContext(PWallet);
+    const { state, dispatch } = useContext(PWallet);
     //minValidators minDepositAmount startBlock endBlock
     const contract = new state.web3.eth.Contract(ChainABI, '0x0000000000000000000000000000000000000065');
     const send_data = {
         from: state.address,
         gas: gas,
-        gasPrice: gasPrice
+        gasPrice: gasPrice,
     }
     //创建子链
     const inner = async (params: ChainNeed): Promise<number> => {
+        const send_data_creat = {
+            ...send_data,
+            value: params._min_depositAmount,
+            to:'0x0000000000000000000000000000000000000065'
+        };
+        console.log(params)
+        console.log(send_data_creat)
         return new Promise(async (resolve, reject) => {
-            contract.methods.CreateChildChain(params._chain_id, params._min_validators, params._min_depositAmount, params._start_block, params._end_block).send(send_data).then((response: unknown) => {
+            contract.methods.CreateChildChain(
+                params._chain_id,
+                params._min_validators,
+                params._min_depositAmount,
+                params._start_block,
+                params._end_block).send(send_data_creat).then((response: unknown) => {
                 resolve(1)
             }).catch((error: any) => {
+                const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
+                sessionStorage.setItem('error_message', j)
                 resolve(0)
             })
         })
     };
     //加入子链
     const join = async (params: JoinNeed): Promise<number> => {
+        // await ethereum.request({
+        //     method: 'eth_getEncryptionPublicKey',
+        //     params: [state.address]
+        // }).then((res: any) => {
+        //     console.log(res)
+        // })
         return new Promise(async (resolve, reject) => {
             contract.methods.JoinChildChain(params._pubkey, params._chainId, params._signature).send(send_data).then((response: unknown) => {
                 resolve(1)
             }).catch((error: any) => {
+                const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
+                sessionStorage.setItem('error_message', j)
+                dispatch({
+                    type: Type.SET_ERROR_MESSAGE,
+                    payload: {
+                        error_message: j
+                    }
+                })
                 resolve(0)
             })
         })
@@ -597,6 +656,14 @@ export const useChain = () => {
             contract.methods.SetBlockReward(params._chain_id, params._reward).send(send_data).then((response: unknown) => {
                 resolve(1)
             }).catch((error: any) => {
+                const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
+                sessionStorage.setItem('error_message', j)
+                dispatch({
+                    type: Type.SET_ERROR_MESSAGE,
+                    payload: {
+                        error_message: j
+                    }
+                })
                 resolve(0)
             })
         })
@@ -609,7 +676,7 @@ export const useChain = () => {
 };
 //质押
 export const useStake = () => {
-    const { state } = useContext(PWallet);
+    const { state, dispatch } = useContext(PWallet);
     const { inquire } = useBalance();
     const contract = new state.web3.eth.Contract(StakeABI, '0x0000000000000000000000000000000000000065');
     const send_data = {
@@ -622,7 +689,15 @@ export const useStake = () => {
             contract.methods.ExtractReward(send_data.from).send(send_data).then((response: unknown) => {
                 resolve(1);
                 inquire()
-            }).catch((err: any) => {
+            }).catch((error: any) => {
+                const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
+                sessionStorage.setItem('error_message', j)
+                dispatch({
+                    type: Type.SET_ERROR_MESSAGE,
+                    payload: {
+                        error_message: j
+                    }
+                });
                 resolve(0)
             })
         });
@@ -631,12 +706,20 @@ export const useStake = () => {
         return new Promise(async (resolve, reject) => {
             const join_data = {
                 ...send_data,
-                amount: '0x' + DecimalToHex(state.web3.utils.toWei(_amount, 'ether'))
+                value: '0x' + DecimalToHex(state.web3.utils.toWei(_amount, 'ether'))
             };
             contract.methods.Delegate(_address).send(join_data).then((response: unknown) => {
                 resolve(1)
                 inquire()
             }).catch((error: any) => {
+                const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
+                sessionStorage.setItem('error_message', j)
+                dispatch({
+                    type: Type.SET_ERROR_MESSAGE,
+                    payload: {
+                        error_message: j
+                    }
+                })
                 resolve(0)
             })
         })
@@ -645,12 +728,20 @@ export const useStake = () => {
         return new Promise(async (resolve, reject) => {
             const join_data = {
                 ...send_data,
-                amount: '0x' + DecimalToHex(state.web3.utils.toWei(_amount, 'ether'))
+                value: '0x' + DecimalToHex(state.web3.utils.toWei(_amount, 'ether'))
             };
             contract.methods.CancelDelegate(_address).send(join_data).then((response: unknown) => {
                 resolve(1)
                 inquire()
             }).catch((error: any) => {
+                const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
+                sessionStorage.setItem('error_message', j)
+                dispatch({
+                    type: Type.SET_ERROR_MESSAGE,
+                    payload: {
+                        error_message: j
+                    }
+                })
                 resolve(0)
             })
         })

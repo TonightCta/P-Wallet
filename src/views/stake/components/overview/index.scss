@@ -33,11 +33,21 @@
       font-weight: 500;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       span {
         color: $primaryColor;
       }
       .ant-spin {
         transform: translateY(3px);
+      }
+      .title-box{
+        display: flex;
+        align-items: center;
+      }
+      button{
+        span{
+          color: white;
+        }
       }
     }
     .table-mine {

@@ -7,7 +7,8 @@ interface Props {
     visible: boolean,
     title: string,
     pass: boolean,
-    retry: () => void
+    retry: () => void,
+    text?: string
 }
 
 const FeedBackModal = (props: Props): ReactElement<ReactNode> => {
@@ -24,15 +25,16 @@ const FeedBackModal = (props: Props): ReactElement<ReactNode> => {
                         props.pass ? <CheckCircleOutlined /> : <CloseCircleOutlined />
                     }
                 </p>
+                <p>{props.text}</p>
                 <p>
+                    <Button type="default" size="large" onClick={() => {
+                        setVisible(false)
+                    }}>CLOSE</Button>
                     {
-                        props.pass ? <Button type="primary" size="large" onClick={() => {
-                            setVisible(false)
-                        }}>CLOSE</Button>
-                            : <Button type="primary" size="large" onClick={() => {
-                                props.retry();
-                                setVisible(false);
-                            }}>RETRY</Button>
+                        !props.pass && <Button type="primary" size="large" onClick={() => {
+                            props.retry();
+                            setVisible(false);
+                        }}>RETRY</Button>
                     }
                 </p>
             </div>

@@ -89,15 +89,17 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
         setWait(true)
         const params = {
             _chain_id: String(input.chain_id),
-            _min_validators: "0x" + DecimalToHex(input.min_v as number),
-            _min_depositAmount: "0x" + DecimalToHex(state.web3.utils.toWei(input.min_d, 'ether')),
-            _start_block: "0x" + DecimalToHex(input.start_b as number),
-            _end_block: "0x" + DecimalToHex(input.end_b as number)
-        }
+            _min_validators: '0x' + DecimalToHex(input.min_v as number),
+            _min_depositAmount: '0x' + DecimalToHex(state.web3.utils.toWei(input.min_d, 'ether')),
+            _start_block: '0x' + DecimalToHex(input.start_b as number),
+            _end_block: '0x' + DecimalToHex(input.end_b as number)
+        };
         const result = await create(params);
         setWait(false)
-        setJoinbox(true)
-        setPass(result ? true : false);
+        setTimeout(() => {
+            setJoinbox(true)
+            setPass(result ? true : false);
+        })
         result && dispatch({
             type: Type.SET_LAST_CREAT,
             payload: {
@@ -201,13 +203,13 @@ const CreatView = (props: Prop): ReactElement<ReactNode> => {
         return (
             <Modal title={null} footer={null} width={400} centered={true} closable={false} open={joinBox}>
                 <div className="confirm-join">
-                    <p>Created {pass ? 'successfully' : 'failed'}</p>
+                    <p>Created {pass ? 'Successfully' : 'Failed'}</p>
                     <p>
                         {
                             pass ? <CheckCircleOutlined /> : <CloseCircleOutlined />
                         }
                     </p>
-                    {pass ? <p>Whether to jump to Join Child Chain</p> : <p></p>}
+                    {pass ? <p>Whether to jump to Join Child Chain</p> : <p>{sessionStorage.getItem('error_message') || ''}</p>}
                     <p>
                         <Button type="default" onClick={() => {
                             setJoinbox(false)

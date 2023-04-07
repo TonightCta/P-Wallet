@@ -31,7 +31,7 @@ const L2View = (): ReactElement<ReactNode> => {
             url: '/l2/join'
         },
         {
-            name: 'Set Block',
+            name: 'Set BlockReward',
             url: '/l2/edit'
         },
     ];

@@ -7,6 +7,7 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useChain, useConnect } from './../../../../utils/hooks';
 import FeedBackModal from "../../../../components/feedback";
 import { Type } from "../../../../utils/type";
+import axios from "axios";
 
 interface Input {
     from: string,
@@ -62,24 +63,31 @@ const JoinIndex = (): ReactElement<ReactNode> => {
             error('Please enter private key');
             return
         };
-        const result: any = await SignAddress({
-            from: input.from,
-            privateKey: input.private_key
+        setWait(true)
+        const result: any = await axios.post('https://mainnet.plian.io/pchain', {
+            jsonrpc: '2.0',
+            method: 'chain_signAddress',
+            params: [
+                input.from, `0x${input.private_key}`
+            ],
+            id: 1
         });
-        if (!result.reuslt) {
-            error('Private key error')
+        setWait(false)
+        if (result.data.error) {
+            error(result.data.error.message)
             return
         };
-        setWait(true)
         const params = {
-            _pubkey: input.public_key,
+            _pubkey: state.web3.utils.toHex(input.public_key),
             _chainId: input.chain_id,
-            _signature: result.result
+            _signature: result.data.result
         }
         const result_rpc = await join(params);
         setWait(false)
-        setVisible(true)
-        setPass(result_rpc ? true : false);
+        setTimeout(() => {
+            setVisible(true)
+            setPass(result_rpc ? true : false);
+        })
         result_rpc && setInput({
             ...InputSource,
             from: state.address as string
@@ -149,7 +157,7 @@ const JoinIndex = (): ReactElement<ReactNode> => {
                     </li>
                 </ul>
             </div>
-            <FeedBackModal title={`Join ${pass ? 'Success' : 'Failed'}`} visible={visible} pass={pass} retry={() => {
+            <FeedBackModal title={`Join ${pass ? 'Success' : 'Failed'}`} text={pass ? 'already submitted' : sessionStorage.getItem('error_message') || ''} visible={visible} pass={pass} retry={() => {
                 submitJoin()
             }} />
         </div>
