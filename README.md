@@ -6,7 +6,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
-### Node sersion need > 16.x
+### Node Version need > 16.x
 
 ### `npm start`
 
