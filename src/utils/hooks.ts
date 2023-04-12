@@ -236,7 +236,6 @@ export const useWeb3 = () => {
             ethereum.on('chainChanged', (res: any) => {
                 inquire();
                 check();
-
             });
         }, 200)
         // ethereum.on('disconnect', (a: any) => {
