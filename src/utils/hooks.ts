@@ -122,7 +122,7 @@ export const useCheckChain = () => {
                 return
             }
             const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
-            const list: number[] = [2099156, 8007736, 10067275, 16658437];
+            const list: number[] = [2099156, 8007736, 10067275, 16658437];//
             dispatch({
                 type: Type.SET_CHECK_CHAIN,
                 payload: {
