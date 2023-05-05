@@ -150,7 +150,7 @@ const Transactions = (): ReactElement<ReactNode> => {
                     inner: e
                 }
             });
-            setData([...data]);
+            setData(state.developer === 0 ? [...data] : []);
         }, 300)
     };
     const { takeDepositMain, takeWithdrawChild } = useTransfer();
@@ -167,7 +167,7 @@ const Transactions = (): ReactElement<ReactNode> => {
     };
     useEffect(() => {
         queryList();
-    }, [])
+    }, [state.developer])
     useEffect(() => {
         if (state.address == 'null' || !state.address) {
             return

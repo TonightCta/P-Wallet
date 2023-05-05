@@ -116,7 +116,7 @@ const HistoryView = (props: Props): ReactElement<ReactNode> => {
                 <p>
                     <Button type="primary" onClick={() => {
                         props.switchTab(1)
-                    }}>Creat</Button>
+                    }}>Create</Button>
                     <Button type="primary" onClick={() => {
                         props.switchTab(2)
                     }}>Join</Button>

@@ -79,12 +79,12 @@ export const useBalance = () => {
                 chainId: 1
             });
             const devBalance: number = Number(await state.web3.eth.getBalance(ethereum.selectedAddress)) / 1e18;
-            dispatch({
-                type: Type.SET_IS_DEV,
-                payload: {
-                    is_dev: devBalance > 1e5 ? 1 : 0
-                }
-            })
+            // dispatch({
+            //     type: Type.SET_IS_DEV,
+            //     payload: {
+            //         is_dev: devBalance > 1e5 ? 1 : 0
+            //     }
+            // })
             dispatch({
                 type: Type.SET_BALANCE,
                 payload: {
@@ -122,22 +122,29 @@ export const useCheckChain = () => {
                 return
             }
             const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
-            const isUseChain = chain_id === 2099156 || chain_id === 8007736;
+            const list: number[] = [2099156, 8007736, 10067275, 16658437];
             dispatch({
                 type: Type.SET_CHECK_CHAIN,
                 payload: {
-                    check_chain: isUseChain ? 1 : 0
+                    check_chain: (list.indexOf(chain_id) > -1) ? 1 : 0
                 }
             });
             //Set local default chain
             const setLocalChainID = () => {
+                const dev: boolean = chain_id === 16658437 || chain_id === 10067275;
+                dispatch({
+                    type: Type.SET_DEVELOPER,
+                    payload: {
+                        developer: dev ? 1 : 0
+                    }
+                })
                 dispatch({
                     type: Type.SET_TRNASFER_MSG,
                     payload: {
                         transfer_msg: {
-                            from_chain: chain_id === 2099156 ? 'Plian Mainnet Main' : 'Plian Mainnet Subchain 1',
-                            to_chain: chain_id === 2099156 ? 'Plian Mainnet Subchain 1' : 'Plian Mainnet Main',
-                            transfer_type: chain_id === 2099156 ? 0 : 1
+                            from_chain: dev ? chain_id === 16658437 ? 'Plian Testnet Main' : 'Plian Testnet Subchain 1' : chain_id === 2099156 ? 'Plian Mainnet Main' : 'Plian Mainnet Subchain 1',
+                            to_chain: dev ? chain_id === 16658437 ? 'Plian Testnet Subchain 1' : 'Plian Testnet Main' : chain_id === 2099156 ? 'Plian Mainnet Subchain 1' : 'Plian Mainnet Main',
+                            transfer_type: dev ? chain_id === 16658437 ? 0 : 1 : chain_id === 2099156 ? 0 : 1
                         }
                     }
                 })
@@ -148,7 +155,7 @@ export const useCheckChain = () => {
                     }
                 })
             };
-            isUseChain && setLocalChainID()
+            (list.indexOf(chain_id) > -1) && setLocalChainID()
             if (!ethereum.selectedAddress) {
                 dispatch({
                     type: Type.SET_ADDRESS,
@@ -247,7 +254,7 @@ export const useWeb3 = () => {
         monitorChain: chainChange
     }
 };
-interface Chain {
+interface Chain {   
     chain_id: number,
     chainName: string,
     nativeCurrency: {
@@ -286,6 +293,30 @@ export const useSwitchChain = () => {
                     decimals: 18
                 },
                 rpcUrls: ['https://mainnet.plian.io/child_0'],
+                blockExplorerUrls: ['https://piscan.plian.org/index.html']
+            },
+            //Main chain test
+            {
+                chain_id: 16658437,
+                chainName: 'Plian Testnet Main',
+                nativeCurrency: {
+                    name: 'TPI',
+                    symbol: 'TPI',
+                    decimals: 18
+                },
+                rpcUrls: ['https://testnet.plian.io/testnet'],
+                blockExplorerUrls: ['https://piscan.plian.org/index.html']
+            },
+            //Child chain test
+            {
+                chain_id: 10067275,
+                chainName: 'Plian Testnet Subchain 1',
+                nativeCurrency: {
+                    name: 'TPI',
+                    symbol: 'TPI',
+                    decimals: 18
+                },
+                rpcUrls: ['https://testnet.plian.io/child_test'],
                 blockExplorerUrls: ['https://piscan.plian.org/index.html']
             },
         ];
@@ -356,6 +387,8 @@ export const useTransfer = () => {
     const { switchC } = useSwitchChain();
     const { inquire } = useBalance();
     const contract = new state.web3.eth.Contract(TransferABI, '0x0000000000000000000000000000000000000065');
+    const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
+    const dev: boolean = chain_id === 16658437 || chain_id === 10067275;
     //Update waiting status
     const updateWait = (_type: string, _visible: boolean) => {
         dispatch({
@@ -396,7 +429,7 @@ export const useTransfer = () => {
             if (result['transactionHash']) {
                 updateHash(result['transactionHash']);
                 _first_hash = result['transactionHash'];
-                const wait = await switchC(8007736);
+                const wait = await switchC(dev ? 10067275 : 8007736);
                 dispatch({
                     type: Type.SET_LAST_TRANSFER_CHAIN,
                     payload: {
@@ -488,7 +521,7 @@ export const useTransfer = () => {
                     });
                     clearInterval(timer)
                     if (service.result === 'success') {
-                        const wait = await switchC(2099156);
+                        const wait = await switchC(dev ? 16658437 : 2099156);
                         dispatch({
                             type: Type.SET_LAST_TRANSFER_CHAIN,
                             payload: {
@@ -606,7 +639,7 @@ export const useChain = () => {
         const send_data_creat = {
             ...send_data,
             value: params._min_depositAmount,
-            to:'0x0000000000000000000000000000000000000065'
+            to: '0x0000000000000000000000000000000000000065'
         };
         console.log(params)
         console.log(send_data_creat)
@@ -617,12 +650,12 @@ export const useChain = () => {
                 params._min_depositAmount,
                 params._start_block,
                 params._end_block).send(send_data_creat).then((response: unknown) => {
-                resolve(1)
-            }).catch((error: any) => {
-                const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
-                sessionStorage.setItem('error_message', j)
-                resolve(0)
-            })
+                    resolve(1)
+                }).catch((error: any) => {
+                    const j = error.code ? JSON.parse(error.message.split("'")[1]).value.data.message : error.message;
+                    sessionStorage.setItem('error_message', j)
+                    resolve(0)
+                })
         })
     };
     //Join child chain

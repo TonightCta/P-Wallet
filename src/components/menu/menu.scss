@@ -98,6 +98,10 @@
           }
         }
       }
+      .setting-box{
+        margin-left: 20px;
+        cursor: pointer;
+      }
     }
     .mobile-avatar {
       display: none;
@@ -312,5 +316,12 @@
         display: block;
       }
     }
+  }
+}
+.set-inner{
+  .dev-open{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }

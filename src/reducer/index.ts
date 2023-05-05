@@ -35,6 +35,7 @@ export const defaultState: State = {
     reward_total: Number(sessionStorage.getItem('reward_total')) || 0,//Total Staking Rewards
     is_dev: Number(sessionStorage.getItem('is_dev')) || 0,//Is it a development environment
     error_message: '',//Wallet error message
+    developer:Number(sessionStorage.getItem('developer')) || 0,
 };
 
 export const defaultContext: Context = {
@@ -99,6 +100,9 @@ export const initState = (state: State, action: IAction) => {
             return { ...state, is_dev: payload.is_dev }
         case Type.SET_ERROR_MESSAGE:
             return { ...state, error_message: payload.error_message }
+        case Type.SET_DEVELOPER:
+            sessionStorage.setItem('developer',String(payload.developer))
+            return { ...state,developer:payload.developer }
         default:
             return state;
     }

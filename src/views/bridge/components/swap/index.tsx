@@ -23,11 +23,11 @@ const Swap = (): ReactElement<ReactNode> => {
             return
         };
         if (selectedChain === 2099156 && amount > Number(state.account_balance?.main_balance)) {
-            message.error(`Your available balance is ${state.account_balance?.main_balance} PI`);
+            message.error(`Your available balance is ${state.account_balance?.main_balance} ${state.developer === 1 ? 'T' : ''}PI`);
             return
         }
         if (selectedChain === 8007736 && amount > Number(state.account_balance?.child_balance)) {
-            message.error(`Your available balance is ${state.account_balance?.child_balance} PI`);
+            message.error(`Your available balance is ${state.account_balance?.child_balance} ${state.developer === 1 ? 'T' : ''}PI`);
             return
         }
         state.transfer_msg?.transfer_type === 0
@@ -59,7 +59,7 @@ const Swap = (): ReactElement<ReactNode> => {
                         ['Deposit', 'Withdraw'].map((item: string, index: number) => {
                             return (
                                 <li key={index} className={`${state.transfer_msg!.transfer_type === index ? 'active-tab' : ''}`} onClick={async () => {
-                                    const chain_id: number = item === 'Deposit' ? 2099156 : 8007736
+                                    const chain_id: number = item === 'Deposit' ? state.developer === 1 ? 16658437 : 2099156 : state.developer === 1 ? 10067275 : 8007736
                                     const result = await switchC(chain_id)
                                     if (result != null) {
                                         return
@@ -68,8 +68,8 @@ const Swap = (): ReactElement<ReactNode> => {
                                         type: Type.SET_TRNASFER_MSG,
                                         payload: {
                                             transfer_msg: {
-                                                from_chain: item === 'Deposit' ? 'Plian Mainnet Main' : 'Plian Mainnet Subchain 1',
-                                                to_chain: item === 'Deposit' ? 'Plian Mainnet Subchain 1' : 'Plian Mainnet Main',
+                                                from_chain: item === 'Deposit' ? state.developer === 1 ? 'Plian Testnet Main' : 'Plian Mainnet Main' : state.developer === 1 ? 'Plian Testnet Subchain 1' : 'Plian Mainnet Subchain 1',
+                                                to_chain: item === 'Deposit' ?  state.developer === 1 ? 'Plian Testnet Subchain 1' : 'Plian Mainnet Subchain 1' : state.developer === 1 ? 'Plian Testnet Main' : 'Plian Mainnet Main',
                                                 transfer_type: index
                                             }
                                         }
@@ -90,15 +90,15 @@ const Swap = (): ReactElement<ReactNode> => {
                         setAmount(e.target.value)
                     }} placeholder="0.0" onWheel={event => event.currentTarget.blur()} />
                 </p>
-                <p>Balance:&nbsp;{state.default_chain == '2099156' ? state.account_balance?.main_balance?.toFixed(4) : state.account_balance?.child_balance?.toFixed(4)}&nbsp;PI</p>
+                <p>Balance:&nbsp;{state.developer === 1 ? state.account_balance?.dev_balance :  state.default_chain == '2099156' ? state.account_balance?.main_balance?.toFixed(4) : state.account_balance?.child_balance?.toFixed(4)}&nbsp;{state.developer === 1 ? 'T' : ''}PI</p>
             </div>
             <div className="arrow-box">
                 <img src={require('../../../../assets/images/down-arrow.png')} alt="" />
             </div>
             <div className="to-box transfer-msg">
                 <p>To<span>{state.transfer_msg!.to_chain ? state.transfer_msg!.to_chain : 'Wallet not connected'}</span></p>
-                <p>You will receive:&nbsp;{Number(amount).toFixed(4)}&nbsp;PI</p>
-                <p>Balance:&nbsp;{state.default_chain == '2099156' ? state.account_balance?.child_balance?.toFixed(4) : state.account_balance?.main_balance?.toFixed(4)}&nbsp;PI</p>
+                <p>You will receive:&nbsp;{Number(amount).toFixed(4)}&nbsp;{state.developer === 1 ? 'T' : ''}PI</p>
+                <p>Balance:&nbsp;{ state.developer === 1 ? 'unknow' : state.default_chain == '2099156' ? state.account_balance?.child_balance?.toFixed(4) : state.account_balance?.main_balance?.toFixed(4)}&nbsp;{state.developer === 1 ? 'T' : ''}PI</p>
             </div>
             <div className="make-transfer">
                 <Button onClick={() => {

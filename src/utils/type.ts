@@ -13,7 +13,7 @@ export interface Balance {
     main_balance_usdt: number,
     child_balance: number,
     child_balance_usdt: number,
-    dev_balance: number
+    dev_balance: number,
 }
 export interface State {
     web3?: any,
@@ -35,7 +35,8 @@ export interface State {
     is_wallet?: number,
     reward_total?: number,
     is_dev?: number,
-    error_message?: string
+    error_message?: string,
+    developer?:number
 }
 
 export enum Type {
@@ -57,7 +58,8 @@ export enum Type {
     SET_IS_WALLET = 'set_is_wallet',
     SET_REWARD_TOTAL = 'set_rewark_total',
     SET_IS_DEV = 'set_is_dev',
-    SET_ERROR_MESSAGE = 'set_error_message'
+    SET_ERROR_MESSAGE = 'set_error_message',
+    SET_DEVELOPER = 'set_developer'
 };
 
 export interface IAction {

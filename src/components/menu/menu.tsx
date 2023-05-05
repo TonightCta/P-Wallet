@@ -1,24 +1,39 @@
 import { ReactElement, ReactNode, useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Select, Spin } from 'antd';
-import { MenuOutlined } from '@ant-design/icons'
+import { Button, Select, Spin, Popover, Switch } from 'antd';
+import { MenuOutlined, SettingOutlined } from '@ant-design/icons'
 import { useConnect, useSwitchChain } from '../../utils/hooks'
 import './menu.scss'
 import { PWallet } from '../../App';
 import Jazzicon from 'react-jazzicon';
 import MobileMenu from './components/mobile_menu';
+import { Type } from '../../utils/type';
 
 interface Route {
     url: string,
     name: string
 }
 
+interface Option {
+    value: string,
+    label: string
+}
+
+const Mainnet: Option[] = [
+    { value: '2099156', label: 'Plian Mainnet Main' },
+    { value: '8007736', label: 'Plian Mainnet Subchain 1' },
+]
+const Testnet: Option[] = [
+    { value: '16658437', label: 'Plian Testnet Main' },
+    { value: '10067275', label: 'Plian Testnet Subchain 1' },
+]
+
 const MenuTab = (): ReactElement<ReactNode> => {
     const navigate = useNavigate();
     // const { t } = useTranslation();
     const { connect } = useConnect();
     //Current connection address
-    const { state } = useContext(PWallet);
+    const { state, dispatch } = useContext(PWallet);
     const location = useLocation();
     const [mobildMenu, setMobileMenu] = useState<boolean>(false);
     //Currently selected main network
@@ -41,21 +56,55 @@ const MenuTab = (): ReactElement<ReactNode> => {
             name: 'L2'
         },
     ];
+    const [options, setOptions] = useState<Option[]>(state.developer === 1 ? Testnet : Mainnet);
     useEffect(() => {
         switch (location.pathname) {
             case '/':
                 setActive(0);
+                setIsSet(true)
                 break;
             case '/stake':
+                setIsSet(false)
                 setActive(1);
                 break;
             case '/l2':
+                setIsSet(false)
                 setActive(2);
                 break;
             default:
+                setIsSet(true)
                 setActive(0)
         }
-    }, [location.pathname])
+    }, [location.pathname]);
+    const [isSet,setIsSet] = useState<boolean>(true);
+    const [isDev, setIsDev] = useState<boolean>(false);
+    useEffect(() => {
+        console.log(state.developer)
+        setIsDev(state.developer === 1 ? true : false);
+    }, [])
+    const onChange = async (value: boolean) => {
+        setIsDev(value)
+        const result = await switchC(value ? 16658437 : 2099156);
+        if (result != null) {
+            setIsDev(false)
+            return
+        };
+        setOptions(value ? Testnet : Mainnet)
+        dispatch({
+            type: Type.SET_DEVELOPER,
+            payload: {
+                developer: value ? 1 : 0
+            }
+        })
+    }
+    const Set = (
+        <div className='set-inner'>
+            <div className='dev-open'>
+                <p>Developer mode</p>
+                <Switch checked={isDev} size='small' onChange={onChange} />
+            </div>
+        </div>
+    )
     return (
         <div className='menu-box'>
             <div className='menu-inside'>
@@ -84,16 +133,12 @@ const MenuTab = (): ReactElement<ReactNode> => {
                 </div>
                 <div className='connect-wallet-msg'>
                     <div className='tools-box'>
-                        {/* Set up */}
-                        {/* <p className='setting-icon icon-oper'>
-                            <SettingOutlined style={{ color: 'white', fontSize: 20 }} />
-                        </p> */}
                         <div className='balance-text'>Balance&nbsp;:&nbsp;
                             {
                                 !state.balance_wait
-                                    ? <p>{state.is_dev === 1 ? state.account_balance?.dev_balance : state.default_chain == '2099156' ? state.account_balance?.main_balance?.toFixed(4) : state.account_balance?.child_balance?.toFixed(4)}</p>
+                                    ? <p>{state.developer === 1 ? state.account_balance?.dev_balance : state.default_chain == '2099156' ? state.account_balance?.main_balance?.toFixed(4) : state.account_balance?.child_balance?.toFixed(4)}</p>
                                     : <Spin size="small" />
-                            }&nbsp;Pi&nbsp;&nbsp;($&nbsp;{state.default_chain == '2099156' ? state.account_balance?.main_balance_usdt?.toFixed(4) : state.account_balance?.child_balance_usdt?.toFixed(4)})
+                            }&nbsp;Pi&nbsp;&nbsp;($&nbsp;{state.developer === 1 ? '0.0000' :  state.default_chain == '2099156' ? state.account_balance?.main_balance_usdt?.toFixed(4) : state.account_balance?.child_balance_usdt?.toFixed(4)})
                         </div>
                         {/* Switch language */}
                         {/* <p className='select-language icon-oper'>
@@ -109,13 +154,17 @@ const MenuTab = (): ReactElement<ReactNode> => {
                             value={state.default_chain}
                             style={{ width: 200, height: 30 }}
                             onChange={handleChange}
-                            options={[
-                                { value: '2099156', label: 'Plian Mainnet Main' },
-                                // { value: '2099156', label: 'Dev Plian' },
-                                { value: '8007736', label: 'Plian Mainnet Subchain 1' },
-                            ]}
+                            options={options}
                         />
                     </div>
+                    {isSet && <div className='setting-box'>
+                        {/* Set up */}
+                        <Popover placement="bottom" title="Set up" content={Set} trigger="click">
+                            <p className='setting-icon icon-oper'>
+                                <SettingOutlined style={{ color: 'white', fontSize: 20 }} />
+                            </p>
+                        </Popover>
+                    </div>}
                     {/* Connect wallet */}
                     <div className='connect-btn'>
                         <Button type='primary' onClick={() => {
@@ -130,6 +179,7 @@ const MenuTab = (): ReactElement<ReactNode> => {
                             }
                         </Button>
                     </div>
+
                 </div>
                 <div className='mobile-avatar' onClick={() => {
                     setMobileMenu(true)
