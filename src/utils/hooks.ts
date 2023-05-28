@@ -9,6 +9,7 @@ import { gas, gasPrice } from "./type";
 import { SetWithdrawLog, RecordHash } from "../request/api";
 import { GetBalance } from '../request/api';
 import { DecimalToHex } from ".";
+// import axios from 'axios'
 
 
 
@@ -454,7 +455,7 @@ export const useTransfer = () => {
             from: state.address,
             chainId: 'child_0',
             gas: gas,
-            gasPrice: '0'
+            gasPrice: gasPrice
         };
         updateHash('1');
         contract.methods.DepositInChildChain('child_0', hash).send(params).on('transactionHash', async (_hash: string) => {
@@ -548,7 +549,7 @@ export const useTransfer = () => {
             from: state.address,
             chainId: 'pchain',
             gas: gas,
-            gasPrice: '0'
+            gasPrice: gasPrice
         };
         updateHash('1')
         contract.methods.WithdrawFromMainChain('child_0', state.web3.utils.toWei(String(amount)), hash).send(params).on('transactionHash', async (_hash: string) => {
