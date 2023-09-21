@@ -58,5 +58,24 @@
             }
         ],
         "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "CrossChainTransferRequest",
+        "constant": false,
+        "inputs": [
+            {
+                "name": "fromChainId",
+                "type": "string"
+            },
+            {
+                "name": "toChainId",
+                "type": "string"
+            },
+            {
+                "name": "amount",
+                "type": "uint256"
+            }
+        ]
     }
 ]

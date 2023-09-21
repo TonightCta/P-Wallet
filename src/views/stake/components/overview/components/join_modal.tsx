@@ -57,7 +57,7 @@ const JoinModal = (props: Props): ReactElement => {
             error('Please enter amount');
             return
         };
-        if (input.amount < 1000) {
+        if (+input.amount < 1000) {
             error('Delegation amount must be greater or equal to 1000 PI');
             return
         }
@@ -87,7 +87,7 @@ const JoinModal = (props: Props): ReactElement => {
             error('Please enter amount');
             return
         }
-        if (input.amount > (props.max as number)) {
+        if (+input.amount > (props.max as number)) {
             error(`The maximum amount that can be canceled is ${props.max} PI`)
             return
         };

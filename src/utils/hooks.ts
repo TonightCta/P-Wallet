@@ -1,14 +1,15 @@
 import { message } from "antd";
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { PWallet } from "../App";
 import { IResponse, Type } from "./type";
 import TransferABI from './abi/transfer_abi.json';
 import ChainABI from './abi/chain_abi.json'
 import StakeABI from './abi/stake.json'
-import { gas, gasPrice } from "./type";
+import { gas } from "./type";
 import { SetWithdrawLog, RecordHash } from "../request/api";
 import { GetBalance } from '../request/api';
 import { DecimalToHex } from ".";
+import axios from "axios";
 
 
 
@@ -254,7 +255,7 @@ export const useWeb3 = () => {
         monitorChain: chainChange
     }
 };
-interface Chain {   
+interface Chain {
     chain_id: number,
     chainName: string,
     nativeCurrency: {
@@ -389,6 +390,14 @@ export const useTransfer = () => {
     const contract = new state.web3.eth.Contract(TransferABI, '0x0000000000000000000000000000000000000065');
     const chain_id: number = state.web3.utils.hexToNumber(ethereum.chainId);
     const dev: boolean = chain_id === 16658437 || chain_id === 10067275;
+    const [gasPriceChain, setGasPriceChain] = useState<string>('');
+    const getPrice = async () => {
+        const pi = ethereum ? await state.web3.eth.getGasPrice() : '0';
+        setGasPriceChain(pi)
+    };
+    useEffect(() => {
+        getPrice();
+    }, [state.default_chain])
     //Update waiting status
     const updateWait = (_type: string, _visible: boolean) => {
         dispatch({
@@ -419,54 +428,60 @@ export const useTransfer = () => {
         updateWait('wait', true)
         const params = {
             from: state.address,
-            chainId: 'pchain',
+            // chainId: 'pchain',
             value: state.web3.utils.toWei(amount, 'ether'),
             gas: gas,
-            gasPrice: gasPrice
+            gasPrice: gasPriceChain
         };
         updateHash('1')
-        contract.methods.DepositInMainChain('child_0').send(params).then(async (result: any) => {
+        contract.methods.CrossChainTransferRequest(dev ? 'testnet' : 'pchain', dev ? 'child_test' : 'child_0', state.web3.utils.toWei(amount, 'ether')).send(params).then(async (result: any) => {
             if (result['transactionHash']) {
                 updateHash(result['transactionHash']);
                 _first_hash = result['transactionHash'];
-                const wait = await switchC(dev ? 10067275 : 8007736);
-                dispatch({
-                    type: Type.SET_LAST_TRANSFER_CHAIN,
-                    payload: {
-                        last_transfer_chain: 8007736
-                    }
-                })
-                wait == null && takeDepositMain(result['transactionHash'])
+                updateWait('success', true);
+                console.log(result['transactionHash'])
+                // const wait = await switchC(dev ? 10067275 : 8007736);
+                // dispatch({
+                //     type: Type.SET_LAST_TRANSFER_CHAIN,
+                //     payload: {
+                //         last_transfer_chain: 8007736
+                //     }
+                // })
+                // wait == null && takeDepositMain(result['transactionHash'])
             } else {
                 updateWait('error', true)
                 updateHash('')
             }
         }).catch((err: any) => {
+            console.log(err)
             updateWait('error', true)
             updateHash('')
         })
-
     };
+    const devRecordHash = async (params: any) => {
+        const result = await axios.post('https://api-testnet-piscan.plian.org/wallet/addCrossTransferHistory', params);
+    }
     //Main chain recharge - take over
     const takeDepositMain = async (hash: string) => {
         updateWait('wait', true)
         const params = {
             from: state.address,
             chainId: 'child_0',
+            gasPrice: gasPriceChain,
             gas: gas,
-            gasPrice: '0'
         };
         updateHash('1');
         contract.methods.DepositInChildChain('child_0', hash).send(params).on('transactionHash', async (_hash: string) => {
             updateHash(_hash)
             _second_hash = _hash;
-            await RecordHash({
+            const params = {
                 address: state.address,
                 fromChainId: 0,
                 toChainId: 1,
                 firstHash: _first_hash,
                 secondHash: _second_hash
-            });
+            }
+            state.developer === 0 ? await RecordHash(params) : await devRecordHash(params);
             updateWait('success', true);
             dispatch({
                 type: Type.SET_RELOAD_LOGS,
@@ -499,6 +514,10 @@ export const useTransfer = () => {
         //     console.log(log)
         // })
     };
+    const devSetWithdrawLog = async (params: any) => {
+        const result = await axios.post('https://api-testnet-piscan.plian.org/wallet/getChildTxInMainChain', params);
+        console.log(result)
+    }
     //Child chain withdrawal - transfer out
     const withdrawChildChain = async (amount: number) => {
         updateWait('wait', true)
@@ -507,35 +526,41 @@ export const useTransfer = () => {
             chainId: 'pchain',
             value: state.web3.utils.toWei(amount, 'ether'),
             gas: gas,
-            gasPrice: gasPrice
+            gasPrice: gasPriceChain
         };
         updateHash('1')
-        contract.methods.WithdrawFromChildChain('child_0').send(params).then(async (result: any) => {
+        contract.methods.CrossChainTransferRequest(dev ? 'child_test' : 'child_0', dev ? 'testnet' : 'pchain', state.web3.utils.toWei(amount, 'ether')).send(params).then(async (result: any) => {
+            // contract.methods.WithdrawFromChildChain('child_0').send(params).then(async (result: any) => {
             if (result['transactionHash']) {
                 updateHash(result['transactionHash']);
                 _first_hash = result['transactionHash'];
-                const timer = setInterval(async () => {
-                    const service: any = await SetWithdrawLog({
-                        txHash: result['transactionHash'],
-                        chainId: 1
-                    });
-                    clearInterval(timer)
-                    if (service.result === 'success') {
-                        const wait = await switchC(dev ? 16658437 : 2099156);
-                        dispatch({
-                            type: Type.SET_LAST_TRANSFER_CHAIN,
-                            payload: {
-                                last_transfer_chain: 2099156
-                            }
-                        })
-                        wait == null && takeWithdrawChild(amount, result['transactionHash'])
-                    }
-                }, 5000);
+                updateWait('success', true);
+                // const timer = setInterval(async () => {
+                //     const service: any = state.developer === 0 ? await SetWithdrawLog({
+                //         txHash: result['transactionHash'],
+                //         chainId: 1
+                //     }) : await devSetWithdrawLog({
+                //         txHash: result['transactionHash'],
+                //         chainId: 1
+                //     });
+                //     clearInterval(timer)
+                //     if (service.result === 'success') {
+                //         const wait = await switchC(dev ? 16658437 : 2099156);
+                //         dispatch({
+                //             type: Type.SET_LAST_TRANSFER_CHAIN,
+                //             payload: {
+                //                 last_transfer_chain: 2099156
+                //             }
+                //         });
+                //         wait == null && takeWithdrawChild(amount, result['transactionHash'])
+                //     }
+                // }, 5000);
             } else {
                 updateHash('')
                 updateWait('error', true)
             }
         }).catch((err: any) => {
+            console.log(err)
             updateHash('')
             updateWait('error', true)
         })
@@ -548,19 +573,20 @@ export const useTransfer = () => {
             from: state.address,
             chainId: 'pchain',
             gas: gas,
-            gasPrice: '0'
+            gasPrice: gasPriceChain
         };
         updateHash('1')
         contract.methods.WithdrawFromMainChain('child_0', state.web3.utils.toWei(String(amount)), hash).send(params).on('transactionHash', async (_hash: string) => {
             updateHash(_hash)
             _second_hash = _hash;
-            await RecordHash({
+            const params = {
                 address: state.address,
                 fromChainId: 1,
                 toChainId: 0,
                 firstHash: _first_hash,
                 secondHash: _second_hash
-            });
+            };
+            state.developer === 0 ? await RecordHash(params) : await devRecordHash(params);
             updateWait('success', true);
             dispatch({
                 type: Type.SET_RELOAD_LOGS,
@@ -627,12 +653,20 @@ export const useTransfer = () => {
 //Chain operation
 export const useChain = () => {
     const { state, dispatch } = useContext(PWallet);
+    const [gasPriceChain, setGasPriceChain] = useState<string>('');
+    const getPrice = async () => {
+        const pi = ethereum ? await state.web3.eth.getGasPrice() : '0';
+        setGasPriceChain(pi)
+    };
+    useEffect(() => {
+        getPrice();
+    }, [state.default_chain])
     //minValidators minDepositAmount startBlock endBlock
     const contract = new state.web3.eth.Contract(ChainABI, '0x0000000000000000000000000000000000000065');
     const send_data = {
         from: state.address,
         gas: gas,
-        gasPrice: gasPrice,
+        gasPrice: gasPriceChain,
     }
     //Create child chain
     const inner = async (params: ChainNeed): Promise<number> => {
@@ -641,8 +675,6 @@ export const useChain = () => {
             value: params._min_depositAmount,
             to: '0x0000000000000000000000000000000000000065'
         };
-        console.log(params)
-        console.log(send_data_creat)
         return new Promise(async (resolve, reject) => {
             contract.methods.CreateChildChain(
                 params._chain_id,
@@ -711,10 +743,18 @@ export const useStake = () => {
     const { state, dispatch } = useContext(PWallet);
     const { inquire } = useBalance();
     const contract = new state.web3.eth.Contract(StakeABI, '0x0000000000000000000000000000000000000065');
+    const [gasPriceChain, setGasPriceChain] = useState<string>('');
+    const getPrice = async () => {
+        const pi = ethereum ? await state.web3.eth.getGasPrice() : '0';
+        setGasPriceChain(pi)
+    };
+    useEffect(() => {
+        getPrice();
+    }, [state.default_chain])
     const send_data = {
         from: state.address,
         gas: gas,
-        gasPrice: gasPrice
+        gasPrice: gasPriceChain
     };
     const receive = async (): Promise<number> => {
         return new Promise(async (resolve, reject) => {

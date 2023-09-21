@@ -3,9 +3,10 @@ import { Button, Table, Tooltip } from 'antd';
 import { ColumnsType } from "antd/es/table";
 import { TransactionsLog } from '../../../../request/api';
 import { DateConvert, OutSide } from '../../../../utils/index'
-import { useSwitchChain, useTransfer } from './../../../../utils/hooks';
-import { PWallet } from './../../../../App';
+import { useSwitchChain, useTransfer } from '../../../../utils/hooks';
+import { PWallet } from '../../../../App';
 import { Type } from "../../../../utils/type";
+import axios from "axios";
 
 
 interface Data {
@@ -150,6 +151,11 @@ const Transactions = (): ReactElement<ReactNode> => {
                     inner: e
                 }
             });
+            const devResult = await axios.post('https://api-testnet-piscan.plian.org/wallet/getCrossTransferHistoryList',{
+                ...params,
+                chainId:0
+            });
+            console.log(devResult)
             setData(state.developer === 0 ? [...data] : []);
         }, 300)
     };

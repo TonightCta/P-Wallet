@@ -79,5 +79,6 @@ export interface IResponse {
 }
 
 // Cross-chain gas
-export const gas: number = 42000
-export const gasPrice: number = 42000
+export const gas: number = 84000
+export const gas_2: number = 42000
+export const gasPrice: number = 4200000000

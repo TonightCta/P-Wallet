@@ -1,6 +1,7 @@
 .wallet-view {
   width: 1400px;
   margin: 0 auto;
+  height: 80vh;
   .swap-content {
     width: 600px;
     border-radius: 8px;
@@ -49,6 +50,36 @@
           margin-left: 10px;
           font-weight: bold;
           font-size: 15px;
+        }
+      }
+      .select-box {
+        display: flex;
+        align-items: center;
+        span {
+          border: 0;
+          padding: 0;
+        }
+        .ant-select {
+          margin-left: 12px;
+          height: 28px;
+          width: 200px;
+          .ant-select-selector {
+            height: 28px;
+            border-color: #888;
+            input {
+              height: 28px;
+            }
+            background-color: rgba(0, 0, 0, 0);
+            .ant-select-selection-item {
+              color: white;
+              line-height: 26px;
+            }
+          }
+          .ant-select-arrow {
+            span {
+              color: white;
+            }
+          }
         }
       }
       .inp-amount {
@@ -140,8 +171,8 @@
           background-color: #00c800;
         }
       }
-      .pending-state{
-        .state-point{
+      .pending-state {
+        .state-point {
           background-color: yellow;
         }
       }
@@ -229,7 +260,7 @@
       .wait-text {
         span {
           font-weight: bold;
-          font-size: .8rem;
+          font-size: 0.8rem;
           color: #ff0000;
         }
       }
